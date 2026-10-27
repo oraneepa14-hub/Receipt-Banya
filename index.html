@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ระบบสรุปยอดเงินโอนรายวัน — บ้านยาเขวา</title>
+<!--
+  หน้านี้สำหรับ GitHub Pages เท่านั้น: พาไปที่ Web App ของ Google Apps Script
+  ระบบจริง (login, อ่านสลิป, บันทึก) ทำงานบน Apps Script — เปิดตรงจาก GitHub ไม่ได้
+  ถ้า Deploy ใหม่แล้วได้ลิงก์ /exec ใหม่ ให้แก้ค่า APP_URL ด้านล่างเพียงจุดเดียว
+-->
+<script>
+  var APP_URL = 'https://script.google.com/macros/s/AKfycbzVaAozCC3x6KnkqKB3a5Wl32GDCqqdAqU0eeD4v_CqT9CYoRtZkA0dYDJaTLmND6uHog/exec';
+  window.location.replace(APP_URL);
+</script>
+<style>
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f3f5f1;color:#12302f;
+       font-family:system-ui,'Noto Sans Thai',sans-serif;padding:16px;box-sizing:border-box}
+  .card{background:#fff;border-radius:18px;box-shadow:0 6px 20px rgba(18,48,47,.08);padding:28px 24px;max-width:360px;width:100%;text-align:center}
+  .mark{width:52px;height:52px;border-radius:14px;background:#12302f;color:#fff;display:grid;place-items:center;font-weight:700;font-size:22px;margin:0 auto 14px}
+  h1{font-size:19px;margin:0 0 4px} p{color:#4b5f5d;margin:0 0 18px;font-size:14px}
+  a.btn{display:block;background:#0f766e;color:#fff;text-decoration:none;padding:12px;border-radius:10px;font-weight:600}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="mark">฿</div>
+    <h1>ระบบสรุปยอดเงินโอนรายวัน</h1>
+    <p>บ้านยาเขวา — กำลังเปิดระบบ…</p>
+    <a class="btn" id="go" href="#">เปิดระบบ</a>
+  </div>
+  <script>document.getElementById('go').href = APP_URL;</script>
+</body>
+</html>
