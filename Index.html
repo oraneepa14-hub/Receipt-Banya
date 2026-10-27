@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<script>
+/* แสดงข้อผิดพลาดของหน้าเว็บบนจอ (ช่วยแจ้งปัญหาได้ทันที แทนที่จะเห็นหน้าขาว) */
+window.__appErrors = [];
+window.addEventListener('error', function (e) {
+  var msg = (e && e.message ? e.message : 'unknown error') + (e && e.lineno ? ' (บรรทัด ' + e.lineno + ')' : '');
+  window.__appErrors.push(msg);
+  var bar = document.getElementById('errBar');
+  if (bar) { bar.textContent = '⚠ หน้าเว็บทำงานผิดพลาด: ' + msg + ' — กรุณาแคปหน้าจอนี้ส่งผู้ดูแล'; bar.style.display = 'block'; }
+});
+</script>
+<style>
+:root{
+  --bg:#f3f5f1; --card:#ffffff; --ink:#12302f; --ink-2:#4b5f5d; --ink-3:#7c8c8a;
+  --line:#e2e7e1; --line-2:#eef1ec;
+  --brand:#0f766e; --brand-2:#115e59; --brand-soft:#e3f3f0;
+  --ok:#15803d; --ok-soft:#e6f4ea; --warn:#b45309; --warn-soft:#fdf2df;
+  --bad:#b91c1c; --bad-soft:#fde8e8; --mute:#64748b; --mute-soft:#eef1f5;
+  --dup:#c2410c; --dup-soft:#ffedd5;
+  --r:14px; --shadow:0 1px 2px rgba(18,48,47,.06),0 6px 20px rgba(18,48,47,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans Thai',system-ui,sans-serif;font-size:15px;line-height:1.5}
+.num{font-variant-numeric:tabular-nums}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+.hidden{display:none!important}
+a{color:var(--brand)}
+
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 14px;border-radius:10px;font-weight:500;white-space:nowrap}
+.btn:hover{border-color:#c9d2c8}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary:hover{background:var(--brand-2)}
+.btn.warn{background:var(--dup);border-color:var(--dup);color:#fff}
+.btn.danger{color:var(--bad);border-color:#f3c9c9}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.sm{padding:5px 10px;font-size:13px;border-radius:8px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.field label{font-size:13px;color:var(--ink-2);font-weight:500}
+.field .hint{font-size:12px;color:var(--ink-3)}
+.inp{border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:#fff;width:100%}
+.inp:focus{outline:2px solid var(--brand-soft);border-color:var(--brand)}
+textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grow{flex:1}
+
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding:24px 16px;
+  background:radial-gradient(1200px 500px at 10% -10%,#d7ece7 0,transparent 60%),var(--bg)}
+.login-card{width:100%;max-width:380px;background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:32px 28px}
+.mark{width:52px;height:52px;border-radius:14px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:700;font-size:22px;margin-bottom:16px}
+.login-card h1{font-size:22px;margin:0}
+.login-card p{margin:2px 0 22px;color:var(--ink-2)}
+.err{color:var(--bad);font-size:14px;min-height:20px;margin:4px 0 8px}
+
+/* shell */
+header.top{background:var(--ink);color:#fff}
+.top-in{max-width:1200px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:14px}
+.top .mark{width:38px;height:38px;font-size:16px;margin:0;background:#1f4a48;border-radius:10px;flex:none}
+.top .t1{font-weight:600;font-size:16px;line-height:1.2}
+.top .t2{font-size:12px;color:#a9c4c0}
+.user-chip{margin-left:auto;display:flex;align-items:center;gap:8px}
+.user-chip .who{text-align:right;line-height:1.2}
+.user-chip .who b{display:block;font-weight:500;font-size:14px}
+.role{font-size:11px;padding:1px 8px;border-radius:99px;background:#1f4a48;color:#bfe3dc}
+.role.admin{background:#f5c46a;color:#3b2a06}
+.top .btn{background:transparent;color:#d9ebe8;border-color:#2e5755}
+.top .btn:hover{border-color:#5b8481}
+nav.tabs{background:var(--ink);border-top:1px solid #1f4a48}
+.tabs-in{max-width:1200px;margin:0 auto;padding:0 8px;display:flex;gap:4px;overflow-x:auto}
+.tab{background:none;border:0;color:#a9c4c0;padding:11px 14px;border-bottom:3px solid transparent;font-weight:500;white-space:nowrap}
+.tab.on{color:#fff;border-bottom-color:#5eead4}
+.tab .lock{font-size:10px;background:#f5c46a;color:#3b2a06;border-radius:99px;padding:0 6px;margin-left:4px;vertical-align:2px}
+main{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;margin-bottom:18px}
+.card h2{font-size:17px;margin:0;font-weight:600}
+.card .sub{color:var(--ink-3);font-size:13px}
+.card-head{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.card-head > div:first-child{flex:1;min-width:200px}
+
+/* upload */
+.drop{display:block;border:2px dashed #b9cbc7;border-radius:var(--r);padding:28px 16px;text-align:center;background:#fafcfa;transition:.15s;cursor:pointer}
+.drop.over{border-color:var(--brand);background:var(--brand-soft)}
+.drop b{display:block;font-size:16px;margin-bottom:2px}
+.drop span{color:var(--ink-3);font-size:13px}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;margin-top:14px}
+.qi{position:relative;border-radius:10px;overflow:hidden;background:#e9eee8;aspect-ratio:3/4;border:2px solid transparent}
+.qi img{width:100%;height:100%;object-fit:cover;display:block;cursor:pointer}
+.qi .st{position:absolute;left:4px;right:4px;bottom:4px;font-size:11px;padding:2px 6px;border-radius:6px;text-align:center;font-weight:600;background:rgba(255,255,255,.92)}
+.qi .x{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(18,48,47,.75);color:#fff;font-size:13px;line-height:22px;padding:0}
+.qi.working{border-color:var(--brand)}
+.qi.working::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);background-size:200% 100%;animation:sh 1.1s infinite}
+@keyframes sh{from{background-position:120% 0}to{background-position:-80% 0}}
+.progress{height:8px;background:var(--line-2);border-radius:99px;overflow:hidden;margin:14px 0 6px}
+.progress > i{display:block;height:100%;background:var(--brand);width:0;transition:width .3s}
+.ptext{font-size:13px;color:var(--ink-2)}
+
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.s-OK{background:var(--ok-soft);color:var(--ok)}
+.s-REVIEW{background:var(--warn-soft);color:var(--warn)}
+.s-DUP_PENDING{background:var(--dup-soft);color:var(--dup)}
+.s-DUPLICATE,.s-NOT_SLIP{background:var(--mute-soft);color:var(--mute)}
+.s-CANCELLED,.s-ERROR{background:var(--bad-soft);color:var(--bad)}
+.s-WAIT{background:#fff;color:var(--ink-3)}
+.s-WORK{background:var(--brand-soft);color:var(--brand)}
+.acc-badge{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 6px;border-radius:8px;color:#fff;font-weight:700;font-size:13px;flex:none}
+.acc-lbl{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.acc-lbl small{font-size:13px;color:var(--ink-2)}
+
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{background:#f6f8f5;color:var(--ink-2);font-weight:600;font-size:12.5px;text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+tr.click{cursor:pointer}
+tr.click:hover td{background:#f8fbf9}
+tr.muted td{color:var(--ink-3)}
+tr.muted td.amt{text-decoration:line-through}
+tr.total td{background:#f6f8f5;font-weight:700}
+.note{font-size:12px;color:var(--ink-3);max-width:300px}
+.note.warn{color:var(--warn)}
+.note.dup{color:var(--dup)}
+.dt{white-space:nowrap}
+
+.banner{display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:12px;background:var(--warn-soft);color:#7a3b05;margin-bottom:10px;font-size:14px;flex-wrap:wrap}
+.banner.dup{background:var(--dup-soft);color:#7c2d12}
+.banner .btn{margin-left:auto}
+.acc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.acc-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+.acc-card .hd{display:flex;gap:10px;align-items:center;padding:12px 14px;border-top:4px solid}
+.acc-card .hd .nm{font-weight:600;line-height:1.2}
+.acc-card .hd .bk{font-size:12px;color:var(--ink-3)}
+.acc-card .tot{padding:0 14px 10px;display:flex;align-items:baseline;justify-content:space-between}
+.acc-card .tot b{font-size:24px;font-weight:700}
+.acc-card .tot span{font-size:13px;color:var(--ink-2)}
+.acc-card ul{list-style:none;margin:0;padding:0 6px 8px;max-height:280px;overflow:auto;border-top:1px solid var(--line-2)}
+.acc-card li{display:flex;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:8px;font-size:14px;cursor:pointer}
+.acc-card li:hover{background:#f4f7f4}
+.acc-card li .no{color:var(--ink-3);width:22px}
+.acc-card li .tm{color:var(--ink-2);flex:1}
+.acc-card .empty{padding:10px 14px 14px;color:var(--ink-3);font-size:13px;border-top:1px solid var(--line-2)}
+.grand{margin-top:14px;display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;background:var(--ink);color:#fff;border-radius:14px;padding:16px 20px}
+.grand .lbl{color:#a9c4c0;font-size:13px}
+.grand .big{font-size:28px;font-weight:700}
+.grand .mini{font-size:13px;color:#cfe3df}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:14px 16px}
+.kpi .l{font-size:12.5px;color:var(--ink-3)}
+.kpi .v{font-size:22px;font-weight:700;margin-top:2px}
+.kpi .d{font-size:12px;margin-top:2px;color:var(--ink-3)}
+.up{color:var(--ok)!important}.down{color:var(--bad)!important}
+.chart-box{position:relative;height:320px}
+.chart-box.sm{height:260px}
+.split{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+
+.share{height:6px;border-radius:99px;background:var(--line-2);overflow:hidden;margin-top:6px}
+.share i{display:block;height:100%}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;flex-wrap:wrap}
+.seg button{border:0;background:none;padding:7px 12px;font-size:13px;color:var(--ink-2);border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--brand-soft);color:var(--brand-2);font-weight:600}
+
+.modal-bg{position:fixed;inset:0;background:rgba(18,48,47,.45);display:flex;align-items:flex-start;justify-content:center;padding:30px 12px;overflow:auto;z-index:50}
+.modal{background:#fff;border-radius:18px;width:100%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal.wide{max-width:920px}
+.modal .mh{display:flex;align-items:center;gap:8px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.modal .mh h3{margin:0;font-size:17px;flex:1}
+.modal .mb{padding:18px 20px}
+.modal .mf{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;align-items:center}
+.edit-grid{display:grid;grid-template-columns:230px 1fr;gap:18px}
+@media (max-width:640px){.edit-grid{grid-template-columns:1fr}}
+.slip-img{width:100%;border-radius:10px;border:1px solid var(--line);background:#f2f4f1;min-height:200px;display:grid;place-items:center;color:var(--ink-3);font-size:13px;overflow:hidden}
+.slip-img img{width:100%;display:block;cursor:zoom-in}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.three > div{background:#f6f8f5;border-radius:10px;padding:8px 10px}
+.three .l{font-size:11.5px;color:var(--ink-3)}
+.three .v{font-weight:600}
+@media (max-width:640px){.three{grid-template-columns:1fr}}
+.ai-box{font-size:12.5px;background:#f6f8f5;border-radius:10px;padding:10px 12px;color:var(--ink-2);margin-bottom:12px;word-break:break-word}
+.ai-box b{color:var(--ink)}
+
+/* duplicate popup */
+.dup-item{border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.dup-item.on{border-color:#fdba74;box-shadow:0 0 0 3px #fff1e6}
+.dup-top{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fafbf9;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+.dup-top label{display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer}
+.dup-top input{width:18px;height:18px;accent-color:var(--dup)}
+.dup-cols{display:grid;grid-template-columns:1fr 1fr}
+.dup-cols > div{padding:10px 14px;font-size:13.5px}
+.dup-cols > div + div{border-left:1px dashed var(--line)}
+.dup-cols h4{margin:0 0 4px;font-size:12px;color:var(--ink-3);font-weight:600}
+.dup-cols .k{font-size:15px;font-weight:600}
+@media (max-width:600px){.dup-cols{grid-template-columns:1fr}.dup-cols > div + div{border-left:0;border-top:1px dashed var(--line)}}
+.flag{font-size:12.5px;color:var(--bad);background:var(--bad-soft);border-radius:8px;padding:3px 8px;display:inline-block}
+
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:12px;background:var(--mute-soft);color:var(--ink-2);border-radius:6px;padding:1px 7px;white-space:nowrap}
+
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:80;display:flex;align-items:center;justify-content:center;padding:20px}
+#lightbox img{max-width:100%;max-height:100%;border-radius:8px;background:#fff}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:12px;font-size:14px;z-index:99;box-shadow:var(--shadow);max-width:90vw}
+#toast.err{background:var(--bad)}
+.spin{width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:rot .8s linear infinite;display:inline-block;vertical-align:middle}
+@keyframes rot{to{transform:rotate(360deg)}}
+.loading{padding:30px;text-align:center;color:var(--ink-3)}
+
+/* review before save (stepper) */
+.rv-mb{padding-top:14px}
+.rv-alert{background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.rv-alert-h{font-size:16px;color:#9a3412;margin-bottom:6px}
+.rv-alert-s{font-size:13px;color:var(--ink-2);margin-top:8px;line-height:1.6}
+.rv-cats{display:flex;flex-wrap:wrap;gap:6px}
+.rv-cat{font-size:12.5px;border-radius:99px;padding:3px 10px;background:#fff;border:1px solid var(--line)}
+.rv-cat b{margin-left:2px}
+.cat-date{color:#b45309}.cat-unclear{color:#7c3aed}.cat-account{color:#1d4ed8}.cat-notslip{color:#b91c1c}.cat-other{color:var(--ink-2)}
+.rv-strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.rv-dot{width:34px;height:34px;border-radius:10px;border:2px solid var(--line);background:#fff;font-weight:700;color:var(--ink-2);padding:0}
+.rv-dot.need{border-color:#f59e0b;background:#fffbeb;color:#b45309}
+.rv-dot.fixed,.rv-dot.ok{border-color:#22c55e;background:#f0fdf4;color:#15803d}
+.rv-dot.delete{border-color:#d1d5db;background:#f3f4f6;color:#9ca3af;text-decoration:line-through}
+.rv-dot.cur{outline:3px solid var(--ink);outline-offset:1px}
+.rv{display:grid;grid-template-columns:minmax(220px,42%) 1fr;gap:18px;border:2px solid var(--line);border-radius:16px;padding:14px;background:#fff}
+.rv.need{border-color:#f59e0b}
+.rv.fixed,.rv.ok{border-color:#22c55e}
+.rv.delete{border-color:#d1d5db;background:#fafafa}
+.rv-img{position:relative;border-radius:12px;overflow:hidden;background:#eef1ec;min-height:260px;display:grid;place-items:center;color:var(--ink-3)}
+.rv-img img{width:100%;max-height:62vh;object-fit:contain;display:block;cursor:zoom-in}
+.rv.delete .rv-img img{opacity:.35;filter:grayscale(1)}
+.rv-zoom{position:absolute;bottom:6px;right:6px;font-size:11px;background:rgba(18,48,47,.7);color:#fff;border-radius:6px;padding:2px 6px}
+.rv-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.rv-no{font-weight:700;font-size:15px}
+.rv-state{font-weight:700;font-size:13px;border-radius:99px;padding:4px 12px}
+.rv-state.need{background:#fef3c7;color:#92400e}
+.rv-state.fixed,.rv-state.ok{background:#dcfce7;color:#166534}
+.rv-state.delete{background:#f3f4f6;color:#6b7280}
+.rv-file{font-size:12px;color:var(--ink-3);margin:2px 0 10px;word-break:break-all}
+.rv-issues{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:6px}
+.rv-issues li{display:flex;gap:8px;align-items:flex-start;background:#fef2f2;border-left:4px solid currentColor;border-radius:8px;padding:8px 10px;font-size:13.5px;line-height:1.5}
+.rv-issues li span:last-child{color:var(--ink)}
+.rv-datecmp{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:8px 12px;margin-bottom:10px;text-align:center}
+.rv-datecmp small{display:block;font-size:11.5px;color:var(--ink-3)}
+.rv-datecmp b{font-size:16px}
+.rv-datecmp .neq{font-size:22px;color:#b45309;font-weight:700}
+.rv-hint{font-size:12.5px;color:var(--ink-2);background:#eff6ff;border-radius:8px;padding:6px 10px;margin-bottom:10px}
+.rv-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.rv-fields .field{margin-bottom:8px}
+.rv-fields .field.bad label{color:var(--bad);font-weight:700}
+.rv-fields .field.bad .inp{border-color:#f87171;background:#fff5f5;box-shadow:0 0 0 3px #fee2e2}
+.rv-fields.off{opacity:.45;pointer-events:none}
+.rv-amt{font-size:20px;font-weight:700}
+.rv-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.rv-actions .btn{flex-direction:column;gap:2px;padding:12px 10px;font-size:15.5px;font-weight:700;justify-content:center;border-radius:12px;min-height:64px;white-space:normal;text-align:center}
+.rv-actions .btn small{font-size:12px;font-weight:500;opacity:.9}
+.rv-del{background:#fff;border:2px solid #fca5a5;color:#b91c1c}
+.rv-del:hover{background:#fef2f2}
+.rv-ok{background:#15803d;border:2px solid #15803d;color:#fff}
+.rv-ok:hover{background:#166534}
+.rv-done{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-radius:12px;padding:12px 14px;font-weight:600;margin-top:6px}
+.rv-done.ok{background:#dcfce7;color:#166534}
+.rv-done.del{background:#f3f4f6;color:#4b5563}
+.rv-done .btn{margin-left:auto}
+.rv-nav{display:flex;justify-content:space-between;gap:8px;margin-top:12px}
+.rv-sum{margin-right:auto;font-size:13.5px}
+.qi .noimg{display:grid;place-items:center;height:100%;font-size:11px;color:var(--ink-3);cursor:pointer;text-align:center;padding:6px}
+.s-DRAFT{background:var(--brand-soft);color:var(--brand-2)}
+.s-DISCARDED{background:var(--mute-soft);color:var(--mute)}
+@media (max-width:640px){
+  .rv{grid-template-columns:1fr;padding:10px;gap:12px}
+  .rv-img{min-height:150px}
+  .rv-img img{max-height:34vh}
+  #toast{top:14px;bottom:auto}
+  .rv-actions .btn{min-height:58px;font-size:14.5px}
+  .rv-sum{flex-basis:100%;text-align:center}
+  .qbar-btns #btnSave:not(.hidden){grid-column:1 / -1}
+}
+
+/* settings: engine choice + OCR text */
+.eng-list{display:flex;flex-direction:column;gap:8px}
+.eng{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;background:#fff}
+.eng.on{border-color:var(--brand);background:var(--brand-soft)}
+.eng input{margin-top:4px;accent-color:var(--brand);width:18px;height:18px;flex:none}
+.eng b{font-weight:600;display:block}
+.eng small{display:block;color:var(--ink-2);font-size:12.5px;line-height:1.5}
+.free-note{background:var(--ok-soft);color:#14532d;border-radius:12px;padding:10px 12px;font-size:13.5px;margin-bottom:14px;line-height:1.55}
+.quota{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:12px;background:#fafcfa}
+.quota.out{border-color:#f3c9c9;background:var(--bad-soft)}
+.quota small{color:var(--ink-2);font-size:12.5px}
+.ocr-box{margin-top:8px;font-size:12.5px}
+.ocr-box summary{cursor:pointer;color:var(--ink-2)}
+.ocr-box pre{white-space:pre-wrap;word-break:break-word;background:#f6f8f5;border-radius:8px;padding:8px 10px;max-height:220px;overflow:auto;font-family:inherit;margin:6px 0 0}
+
+/* ================= RESPONSIVE: base additions ================= */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{padding-bottom:env(safe-area-inset-bottom)}
+.brand{min-width:0;flex:1 1 auto}
+.brand .t1,.brand .t2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-chip{flex:none}
+.tab .sm{display:none}
+td.r,th.r,td.amt,.acc-card li b{white-space:nowrap}
+.h2-date{font-weight:500;color:var(--ink-2)}
+/* upload action bar */
+.qbar{margin-top:14px}
+.qbar .progress{margin:0 0 8px}
+.qbar-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.qbar-row .ptext{flex:1 1 240px}
+.qbar-btns{display:flex;gap:8px;flex-wrap:wrap}
+/* daily date controls */
+.day-ctl{display:grid;grid-template-columns:auto minmax(150px,180px) auto auto;gap:8px;align-items:center}
+.day-ctl .inp{padding:7px 10px}
+.day-ctl .btn{justify-content:center}
+/* dashboard filter */
+.filter{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.range{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rng{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2)}
+.rng .inp{width:auto;padding:7px 10px}
+/* modal: scrollable body, fixed header/footer */
+.modal{display:flex;flex-direction:column;max-height:calc(100dvh - 60px)}
+.modal .mb{overflow:auto;-webkit-overflow-scrolling:touch}
+.modal .mh,.modal .mf{flex:none}
+.slip-img img{max-height:70vh;object-fit:contain}
+.chips{max-width:420px}
+
+/* ================= TABLET  (≤ 1024px: iPad) ================= */
+@media (max-width:1024px){
+  main{padding:16px 14px 50px}
+  .inp,select.inp,textarea.inp{font-size:16px}          /* กัน iOS ซูมอัตโนมัติ */
+  .btn{min-height:40px}
+  .btn.sm{min-height:36px}
+  .acc-grid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .kpis{grid-template-columns:repeat(6,1fr)}
+  .kpis .kpi{grid-column:span 2}
+  .kpis .kpi:nth-child(-n+2){grid-column:span 3}
+  .split{grid-template-columns:1fr 1fr}
+  .edit-grid{grid-template-columns:200px 1fr}
+  .note{max-width:240px}
+}
+
+/* ================= PHONE  (≤ 640px) ================= */
+@media (max-width:640px){
+  body{font-size:15px}
+  .top-in{padding:10px 12px;gap:10px}
+  .top .t1{font-size:15px}
+  .top .t2,.user-chip .who,.icon-btn .lbl{display:none}
+  .icon-btn{width:40px;height:40px;padding:0;justify-content:center}
+  .tabs-in{padding:0}
+  .tab{flex:1 1 0;padding:12px 6px;font-size:14px;text-align:center}
+  .tab .lg{display:none}.tab .sm{display:inline}
+  .tab .lock{display:none}
+  main{padding:12px 10px 40px}
+  .card{padding:14px;border-radius:12px;margin-bottom:12px}
+  .card h2{font-size:16px}
+  .card-head{gap:10px;margin-bottom:12px}
+  .card-head > div:first-child{min-width:0;flex-basis:100%}
+  .card-head > .btn{width:100%;justify-content:center}
+  .h2-date{display:block;font-size:14px;margin-top:2px}
+
+  /* upload */
+  .drop{padding:22px 12px}
+  .drop b{font-size:15px}
+  .qgrid{grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px}
+  .qbar{position:sticky;bottom:0;z-index:5;margin:12px -14px -14px;padding:10px 14px calc(12px + env(safe-area-inset-bottom));
+        background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border-top:1px solid var(--line);border-radius:0 0 12px 12px}
+  .qbar-row{flex-direction:column;align-items:stretch;gap:8px}
+  .qbar-row .ptext{flex:none;font-size:12.5px}
+  .qbar-btns{display:grid;grid-template-columns:1fr 1.4fr;gap:8px}
+  .qbar-btns .btn{justify-content:center}
+  .qbar-btns #btnRetry:not(.hidden){grid-column:1 / -1}
+
+  /* daily */
+  .day-ctl{grid-template-columns:44px 1fr 44px;width:100%}
+  .day-ctl .copy{grid-column:1 / -1}
+  .banner{font-size:13.5px;padding:10px 12px}
+  .banner .btn{margin-left:0;width:100%;justify-content:center}
+  .acc-grid{grid-template-columns:1fr;gap:10px}
+  .acc-card .tot b{font-size:22px}
+  .acc-card ul{max-height:none}
+  .grand{display:grid;grid-template-columns:1fr auto;gap:10px 16px;padding:14px 16px}
+  .grand .big{font-size:24px}
+  .grand .mini{grid-column:1 / -1;border-top:1px solid #2a524f;padding-top:8px}
+
+  /* dashboard */
+  .filter{flex-direction:column;align-items:stretch}
+  .seg{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .seg::-webkit-scrollbar{display:none}
+  .seg button{flex:1 0 auto;padding:9px 12px}
+  .range{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .rng{flex-direction:column;align-items:stretch;gap:2px;font-size:12px}
+  .rng .inp{width:100%}
+  .range .btn{justify-content:center}
+  .kpis{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .kpis .kpi,.kpis .kpi:nth-child(-n+2){grid-column:auto}
+  .kpis .kpi:first-child{grid-column:1 / -1}
+  .split{grid-template-columns:1fr}
+  .kpi{padding:12px 14px}
+  .kpi .v{font-size:19px}
+  .chart-box{height:250px}.chart-box.sm{height:220px}
+  .split{gap:0}
+
+  /* modal → bottom sheet */
+  .modal-bg{padding:0;align-items:flex-end}
+  .modal,.modal.wide{max-width:none;border-radius:18px 18px 0 0;max-height:94dvh}
+  .modal .mh{padding:14px 16px}
+  .modal .mb{padding:14px 16px}
+  .modal .mf{padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+  .modal .mf .btn{flex:1 1 auto;justify-content:center}
+  .modal .mf .note{flex-basis:100%}
+  .edit-grid{grid-template-columns:1fr;gap:12px}
+  .slip-img{min-height:120px}
+  .slip-img img{max-height:38vh}
+  .three{grid-template-columns:1fr 1fr}
+  .three > div:last-child{grid-column:1 / -1}
+  .two{grid-template-columns:1fr}
+
+  /* tables → cards */
+  .tbl-wrap{border:0;border-radius:0;overflow:visible}
+  table.rt thead{display:none}
+  table.rt, table.rt tbody{display:block}
+  table.rt tr{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;padding:12px 14px;margin-bottom:10px;
+              border:1px solid var(--line);border-radius:12px;background:#fff}
+  table.rt td{display:block;border:0;padding:0;min-width:0}
+  table.rt td::before{content:attr(data-label);display:block;font-size:11px;color:var(--ink-3);font-weight:500;margin-bottom:1px}
+  table.rt td[data-label=""]::before,table.rt td.nolabel::before{display:none}
+  table.rt td.r{text-align:left}
+  table.rt .note{max-width:none}
+  table.rt tr.click:hover td{background:none}
+  table.rt tr.click:active{background:#f4f7f4}
+  table.rt tr.total{background:#f6f8f5}
+  table.rt tr.total td{background:none}
+  /* slip rows: date/time + amount on top, then account & status, note full width */
+  table.rt-slip td:first-child{display:none}
+  table.rt-slip td.dt{font-weight:600}
+  table.rt-slip td.amt{text-align:right;font-size:17px}
+  table.rt-slip td.amt::before{text-align:right}
+  table.rt-slip td.note{grid-column:1 / -1}
+  table.rt-slip td[colspan]{grid-column:1 / -1}
+  /* account summary: account name spans */
+  table.rt-acc td:first-child{grid-column:1 / -1}
+  table.rt-acc td:last-child{grid-column:1 / -1}
+  /* daily grid: date header row, accounts 3-up */
+  table.rt-grid tr{grid-template-columns:repeat(3,1fr)}
+  table.rt-grid td:first-child{grid-column:1 / -1;font-weight:600;font-size:15px}
+  table.rt-grid td{font-size:13.5px}
+  /* admin tables */
+  #accBody td:nth-child(4),#userBody td:nth-child(5){grid-column:1 / -1}
+  #accBody td:last-child,#userBody td:last-child{grid-column:1 / -1}
+  #accBody td:last-child .btn,#userBody td:last-child .btn{width:100%;justify-content:center}
+
+  .dup-top{padding:10px 12px}
+  .dup-cols > div{padding:10px 12px}
+  .login-card{padding:26px 20px}
+}
+
+/* phone-only / non-phone helpers + compact day list */
+.show-phone{display:none}
+.day-list{display:none;flex-direction:column;gap:8px}
+.day-item{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;text-align:left;width:100%;
+  border:1px solid var(--line);border-radius:12px;background:#fff;padding:10px 12px;color:var(--ink)}
+.day-item:active{background:#f4f7f4}
+.day-item .d1{font-weight:600}
+.day-item .d2{font-weight:700;font-size:16px;text-align:right}
+.day-item .d3{display:flex;flex-wrap:wrap;gap:4px 8px;font-size:12px;color:var(--ink-2)}
+.day-item .d3 i{font-style:normal;white-space:nowrap}
+.day-item .d3 i::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--c);margin-right:4px;vertical-align:0}
+.day-item .d4{font-size:12px;color:var(--ink-3);text-align:right;white-space:nowrap}
+@media (max-width:640px){
+  .hide-phone{display:none!important}
+  .show-phone{display:block}
+  .day-list.show-phone{display:flex}
+}
+
+/* very small phones */
+@media (max-width:360px){
+  .tab{font-size:13px}
+  .three{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr}
+  .kpis .kpi{grid-column:auto!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ======================= LOGIN ======================= -->
+<section id="login">
+  <form class="login-card" id="loginForm" autocomplete="on" action="#" onsubmit="return false;">
+    <div class="mark">฿</div>
+    <h1><?= appName ?></h1>
+    <p><?= shopName ?></p>
+    <div class="field"><label for="lu">ชื่อผู้ใช้</label><input class="inp" id="lu" autocomplete="username" required></div>
+    <div class="field"><label for="lp">รหัสผ่าน</label><input class="inp" id="lp" type="password" autocomplete="current-password" required></div>
+    <div class="err" id="loginErr"></div>
+    <div id="errBar" style="display:none;background:#fde8e8;color:#b91c1c;border-radius:10px;padding:8px 10px;font-size:13px;margin-bottom:10px;word-break:break-word"></div>
+    <button class="btn primary" style="width:100%;justify-content:center;padding:11px" id="loginBtn" disabled>กำลังโหลด…</button>
+  </form>
+</section>
+
+<!-- ======================= APP ======================= -->
+<section id="app" class="hidden">
+  <header class="top"><div class="top-in">
+    <div class="mark">฿</div>
+    <div class="brand"><div class="t1"><?= shopName ?></div><div class="t2"><?= appName ?></div></div>
+    <div class="user-chip">
+      <div class="who"><b id="uName"></b><span class="role" id="uRole"></span></div>
+      <button class="btn sm icon-btn" onclick="openChangePw()" title="เปลี่ยนรหัสผ่าน" aria-label="เปลี่ยนรหัสผ่าน">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2 20 3M16 7l3 3M18 5l2 2"/></svg>
+        <span class="lbl">เปลี่ยนรหัสผ่าน</span></button>
+      <button class="btn sm icon-btn" onclick="logout()" title="ออกจากระบบ" aria-label="ออกจากระบบ">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        <span class="lbl">ออกจากระบบ</span></button>
+    </div>
+  </div></header>
+  <nav class="tabs"><div class="tabs-in">
+    <button class="tab on" data-v="upload"><span class="lg">อัปโหลดสลิป & สรุปรายวัน</span><span class="sm">อัปโหลด/สรุป</span></button>
+    <button class="tab admin-only" data-v="dash">Dashboard <span class="lock">admin</span></button>
+    <button class="tab admin-only" data-v="admin"><span class="lg">ตั้งค่าระบบ</span><span class="sm">ตั้งค่า</span> <span class="lock">admin</span></button>
+  </div></nav>
+
+  <main>
+    <!-- ============ VIEW: UPLOAD + DAILY (ทุกสิทธิ์) ============ -->
+    <div id="view-upload">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>อัปโหลดสลิปโอนเงิน</h2><div class="sub">เลือกได้ครั้งละหลายสิบรูป และส่งได้หลายรอบต่อวัน — ขั้นตอน: เลือกรูป → อ่านสลิป → ตรวจ/แก้/ลบ ใบที่ไม่ผ่านเงื่อนไข → บันทึกข้อมูล (นับสะสมเป็นรายวัน)</div></div>
+        </div>
+        <label class="drop" id="drop">
+          <input type="file" id="fileInp" accept="image/*" multiple hidden>
+          <b>แตะเพื่อเลือกรูปสลิป หรือลากไฟล์มาวางที่นี่</b>
+          <span>รองรับ JPG / PNG / WebP • เลือกได้หลายรูปพร้อมกัน</span>
+        </label>
+        <div id="queueWrap" class="hidden">
+          <div class="qgrid" id="qgrid"></div>
+          <div class="qbar">
+            <div class="progress"><i id="progBar"></i></div>
+            <div class="qbar-row">
+              <div class="ptext" id="progText"></div>
+              <div class="qbar-btns">
+                <button class="btn" id="btnClear" onclick="clearQueue()">ล้างรายการ</button>
+                <button class="btn" id="btnRetry" onclick="startProcessing(true)">ลองใหม่ที่ผิดพลาด</button>
+                <button class="btn primary" id="btnStart" onclick="startProcessing(false)">เริ่มอ่านสลิป</button>
+                <button class="btn primary hidden" id="btnSave" onclick="saveDrafts(this)">บันทึกข้อมูล</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card hidden" id="batchCard">
+        <div class="card-head">
+          <div><h2>ผลการอ่านรอบนี้</h2><div class="sub">ตรวจรายการ แตะแถวเพื่อแก้ไขหรือลบ แล้วกด <b>บันทึกข้อมูล</b> — ยังไม่นับยอดจนกว่าจะบันทึก</div></div>
+          <button class="btn warn sm hidden" id="btnBatchDup" onclick="openDupModal(batchDupIds())">ตรวจข้อมูลซ้ำ</button>
+          <button class="btn primary sm hidden" id="btnSave2" onclick="saveDrafts(this)">บันทึกข้อมูล</button>
+        </div>
+        <div class="tbl-wrap"><table class="rt rt-slip">
+          <thead><tr><th>#</th><th>วันที่และเวลารับเงิน</th><th class="r">จำนวนเงิน</th><th>บัญชีร้าน</th><th>สถานะ</th><th>หมายเหตุ</th></tr></thead>
+          <tbody id="batchBody"></tbody>
+        </table></div>
+      </div>
+
+      <div class="card" id="dailyCard">
+        <div class="card-head">
+          <div><h2>สรุปยอดรายวัน <span id="dailyTitle" class="h2-date"></span></h2><div class="sub">ยอดสะสมจากทุกรอบที่อัปโหลดของวันนั้น • นับเฉพาะรายการ "ยืนยันแล้ว"</div></div>
+          <div class="day-ctl">
+            <button class="btn" onclick="shiftDay(-1)" aria-label="วันก่อน">‹</button>
+            <input type="date" class="inp" id="dailyDate">
+            <button class="btn" onclick="shiftDay(1)" aria-label="วันถัดไป">›</button>
+            <button class="btn copy" onclick="copySummary()">คัดลอกสรุป</button>
+          </div>
+        </div>
+        <div id="dailyBody"><div class="loading"><span class="spin"></span></div></div>
+      </div>
+    </div>
+
+    <!-- ============ VIEW: DASHBOARD (admin) ============ -->
+    <div id="view-dash" class="hidden">
+      <div class="card filter-card">
+        <div class="filter">
+          <div class="seg" id="presets">
+            <button data-p="today">วันนี้</button>
+            <button data-p="7">7 วัน</button>
+            <button data-p="month" class="on">เดือนนี้</button>
+            <button data-p="lastmonth">เดือนก่อน</button>
+            <button data-p="year">ปีนี้</button>
+          </div>
+          <div class="range">
+            <label class="rng"><span>ตั้งแต่</span><input type="date" class="inp" id="dFrom"></label>
+            <label class="rng"><span>ถึง</span><input type="date" class="inp" id="dTo"></label>
+            <button class="btn primary" onclick="manualRange()">แสดง</button>
+            <button class="btn" id="btnExport" onclick="exportExcel(this)">⬇ ส่งออก Excel</button>
+          </div>
+        </div>
+      </div>
+      <div id="dashBody"><div class="loading"><span class="spin"></span></div></div>
+    </div>
+
+    <!-- ============ VIEW: ADMIN ============ -->
+    <div id="view-admin" class="hidden">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>บัญชีของร้าน</h2><div class="sub">ใส่ข้อความ/ตัวเลขที่ปรากฏบนสลิปฝั่งผู้รับ บรรทัดละ 1 ค่า ระบบใช้ค่าเหล่านี้ระบุว่าเงินเข้าบัญชีไหน</div></div>
+          <button class="btn primary sm" onclick="openAccountForm()">+ เพิ่มบัญชี</button>
+        </div>
+        <div class="tbl-wrap"><table class="rt">
+          <thead><tr><th>รหัส</th><th>ชื่อบัญชี</th><th>ธนาคาร</th><th>ข้อมูลที่ปรากฏบนสลิป</th><th>สถานะ</th><th></th></tr></thead>
+          <tbody id="accBody"></tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div><h2>ผู้ใช้งาน</h2><div class="sub">admin = Dashboard, ส่งออก Excel, ตั้งค่าบัญชี/ผู้ใช้, ยกเลิกรายการ • ผู้ใช้ทั่วไป = อัปโหลด ยืนยัน และดูสรุปรายวัน</div></div>
+          <button class="btn primary sm" onclick="openUserForm()">+ เพิ่มผู้ใช้</button>
+        </div>
+        <div class="tbl-wrap"><table class="rt">
+          <thead><tr><th>Username</th><th>ชื่อ</th><th>สิทธิ์</th><th>สถานะ</th><th>เข้าใช้ล่าสุด</th><th></th></tr></thead>
+          <tbody id="userBody"></tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h2>วิธีอ่านสลิป</h2><div class="sub">ค่าเริ่มต้นคือ Google Drive OCR — ฟรีและไม่ต้องตั้งค่าเพิ่ม</div></div></div>
+        <div id="settingsBody" style="max-width:620px"><div class="loading"><span class="spin"></span></div></div>
+      </div>
+    </div>
+  </main>
+</section>
+
+<div id="modalRoot"></div>
+<div id="lightbox" class="hidden" onclick="this.classList.add('hidden')"><img id="lbImg" alt=""></div>
+<div id="toast" class="hidden"></div>
+
+<script>
+/* ===================== CONFIG / STATE ===================== */
+var CONCURRENCY = 2;          // จำนวนรูปที่ส่งอ่านพร้อมกัน (เพิ่มเป็น 4–5 ได้ถ้าใช้ API แบบเสียเงิน)
+var MAX_SIDE = 1800;          // ย่อด้านยาวของรูปก่อนส่ง (px)
+var JPEG_Q = 0.85;
+var LIBS = {
+  chart: 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js',
+  xlsx:  'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+};
+
+var S = { token:null, user:null, accounts:[], queue:[], running:false, batchId:'', daily:null, dash:null, charts:{} };
+var STATUS = {
+  OK:{t:'ยืนยันแล้ว'}, REVIEW:{t:'รอตรวจสอบ'}, DUP_PENDING:{t:'ซ้ำ? รอยืนยัน'}, DUPLICATE:{t:'ตัดออก (ซ้ำ)'},
+  NOT_SLIP:{t:'ไม่ใช่สลิป'}, CANCELLED:{t:'ยกเลิก'}, DRAFT:{t:'รอบันทึก'}, DISCARDED:{t:'ลบออกแล้ว'}, ERROR:{t:'ผิดพลาด'}, WAIT:{t:'รออ่าน'}, WORK:{t:'กำลังอ่าน…'}
+};
+var MUTED = ['DUPLICATE','NOT_SLIP','CANCELLED','DISCARDED'];
+var TH_M = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+var TH_D = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+
+/* ===================== UTILS ===================== */
+var $ = id => document.getElementById(id);
+var esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+var money = n => (n === null || n === undefined || n === '') ? '—' :
+  Number(n).toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2});
+var baht = n => (n === null || n === undefined || n === '') ? '—' : money(n) + ' บาท';
+var money0 = n => Number(n||0).toLocaleString('th-TH', {maximumFractionDigits:0});
+function thDate(iso, withDay){
+  if(!iso) return '—';
+  const [y,m,d] = iso.split('-').map(Number);
+  const s = d + ' ' + TH_M[m-1] + ' ' + (y+543);
+  if(!withDay) return s;
+  return 'วัน' + TH_D[new Date(Date.UTC(y,m-1,d)).getUTCDay()] + 'ที่ ' + s;
+}
+/** วันที่และเวลารับเงิน ตามรูปแบบบนสลิป: 27 ต.ค. 2569 21:18 */
+function dt(date, time){ return date ? thDate(date) + (time ? ' ' + time : '') : (time || '—'); }
+function shortDate(iso){ const [y,m,d] = iso.split('-').map(Number); return d + ' ' + TH_M[m-1]; }
+function isoToday(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function addDays(iso,n){ const [y,m,d]=iso.split('-').map(Number); const t=new Date(Date.UTC(y,m-1,d+n)); return t.toISOString().slice(0,10); }
+function acc(code){ return S.accounts.find(a => a.code === code); }
+function accBadge(code){
+  if(!code) return '<span class="pill s-REVIEW">ไม่ทราบบัญชี</span>';
+  const a = acc(code);
+  return `<span class="acc-badge" style="background:${esc(a ? a.color : '#64748b')}">${esc(code)}</span>`;
+}
+function accLabel(code){
+  if(!code) return accBadge('');
+  const a = acc(code);
+  return `<span class="acc-lbl">${accBadge(code)}<small>${esc(a ? a.name : '')}</small></span>`;
+}
+function pill(st){ return `<span class="pill s-${esc(st)}">${esc((STATUS[st]||{t:st}).t)}</span>`; }
+function isAdmin(){ return S.user && S.user.role === 'admin'; }
+
+var toastT;
+function toast(msg, isErr){
+  const t = $('toast'); t.textContent = msg; t.className = isErr ? 'err' : '';
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.add('hidden'), isErr ? 6000 : 3000);
+}
+function showImage(src){ $('lbImg').src = src; $('lightbox').classList.remove('hidden'); }
+
+function api(fn, ...args){
+  return new Promise((resolve, reject) => {
+    google.script.run
+      .withSuccessHandler(r => {
+        if (r && r.ok) return resolve(r.data);
+        const e = new Error(r ? r.error : 'ไม่ได้รับการตอบกลับจากเซิร์ฟเวอร์'); e.code = r && r.code;
+        if (e.code === 'AUTH') sessionExpired();
+        reject(e);
+      })
+      .withFailureHandler(err => reject(new Error(err && err.message || String(err))))
+      [fn](...args);
+  });
+}
+var libLoads = {};
+function loadLib(name){
+  if (!libLoads[name]) libLoads[name] = new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = LIBS[name];
+    s.onload = res; s.onerror = () => { delete libLoads[name]; rej(new Error('โหลดไลบรารีไม่สำเร็จ ตรวจสอบอินเทอร์เน็ต')); };
+    document.head.appendChild(s);
+  });
+  return libLoads[name];
+}
+
+/* ===================== MODAL ===================== */
+function openModal(html, wide){
+  $('modalRoot').innerHTML = `<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal ${wide?'wide':''}">${html}</div></div>`;
+}
+function closeModal(){ $('modalRoot').innerHTML = ''; }
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!$('lightbox').classList.contains('hidden')) $('lightbox').classList.add('hidden'); else closeModal();
+});
+
+/* ===================== AUTH ===================== */
+$('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = $('loginBtn'); btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ…'; $('loginErr').textContent = '';
+  try{
+    const r = await api('apiLogin', $('lu').value, $('lp').value);
+    S.token = r.token; S.user = r.user; S.accounts = r.accounts;
+    $('lp').value = '';
+    showApp();
+  }catch(err){ $('loginErr').textContent = err.message; }
+  finally{ btn.disabled = false; btn.textContent = 'เข้าสู่ระบบ'; }
+});
+
+function showApp(){
+  $('login').classList.add('hidden'); $('app').classList.remove('hidden');
+  $('uName').textContent = S.user.name;
+  $('uRole').textContent = isAdmin() ? 'ผู้ดูแลระบบ' : 'ผู้ใช้งานทั่วไป';
+  $('uRole').className = 'role ' + (isAdmin() ? 'admin' : '');
+  document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !isAdmin()));
+  S.dash = null;
+  if(!$('dailyDate').value) $('dailyDate').value = isoToday();
+  switchView('upload');
+  loadDaily();
+}
+
+function sessionExpired(){
+  if(!S.token) return;
+  S.token = null;
+  closeModal();
+  $('app').classList.add('hidden'); $('login').classList.remove('hidden');
+  $('loginErr').textContent = 'เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่' + (S.queue.length ? ' (รูปที่ค้างอยู่ยังไม่หาย)' : '');
+}
+
+async function logout(){
+  if(S.running && !confirm('กำลังอ่านสลิปอยู่ ต้องการออกจากระบบหรือไม่?')) return;
+  if(!S.running && unsaved().length && !confirm('มี ' + unsaved().length + ' ใบที่ยังไม่ได้บันทึก (ข้อมูลร่างยังอยู่ในระบบ) ออกจากระบบหรือไม่?')) return;
+  try{ await api('apiLogout', S.token); }catch(e){}
+  S.token = null; S.user = null; clearQueue(true);
+  $('app').classList.add('hidden'); $('login').classList.remove('hidden'); $('loginErr').textContent = '';
+}
+
+function openChangePw(){
+  openModal(`<div class="mh"><h3>เปลี่ยนรหัสผ่าน</h3><button class="btn ghost" onclick="closeModal()">✕</button></div>
+    <div class="mb">
+      <div class="field"><label>รหัสผ่านเดิม</label><input class="inp" type="password" id="pw0" autocomplete="current-password"></div>
+      <div class="field"><label>รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)</label><input class="inp" type="password" id="pw1" autocomplete="new-password"></div>
+      <div class="field"><label>ยืนยันรหัสผ่านใหม่</label><input class="inp" type="password" id="pw2" autocomplete="new-password"></div>
+    </div>
+    <div class="mf"><button class="btn" onclick="closeModal()">ยกเลิก</button><button class="btn primary" onclick="saveChangePw(this)">บันทึก</button></div>`);
+}
+async function saveChangePw(btn){
+  if($('pw1').value !== $('pw2').value) return toast('รหัสผ่านใหม่ไม่ตรงกัน', true);
+  btn.disabled = true;
+  try{ await api('apiChangePassword', S.token, $('pw0').value, $('pw1').value); closeModal(); toast('เปลี่ยนรหัสผ่านแล้ว'); }
+  catch(e){ toast(e.message, true); btn.disabled = false; }
+}
+
+/* ===================== NAV ===================== */
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => switchView(b.dataset.v)));
+function switchView(v){
+  if ((v === 'dash' || v === 'admin') && !isAdmin()) v = 'upload';
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  ['upload','dash','admin'].forEach(x => $('view-'+x).classList.toggle('hidden', x !== v));
+  if (v === 'dash' && !S.dash) setPreset('month');
+  if (v === 'admin') loadAdmin();
+  window.scrollTo(0,0);
+}
+
+/* ===================== UPLOAD QUEUE ===================== */
+var drop = $('drop');
+$('fileInp').addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
+['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => addFiles(e.dataTransfer.files));
+
+var qSeq = 0;
+function addFiles(list){
+  // หมายเหตุ: ห้ามมี "//" ใน regex ของไฟล์นี้ — Apps Script จะตีความเป็นคอมเมนต์แล้วตัดบรรทัดทิ้ง
+  const files = Array.from(list || []).filter(f => String(f.type).indexOf('image') === 0 || /\.(jpe?g|png|webp|heic)$/i.test(f.name));
+  let added = 0, skipped = 0;
+  files.forEach(f => {
+    const key = f.name + '|' + f.size + '|' + f.lastModified;
+    if (S.queue.some(q => q.key === key)) { skipped++; return; }
+    S.queue.push({ id: ++qSeq, key, file: f, name: f.name, url: URL.createObjectURL(f), state: 'WAIT', result: null, error: '' });
+    added++;
+  });
+  if (skipped) toast(`ข้ามไฟล์ที่เลือกซ้ำ ${skipped} รูป`);
+  if (added) renderQueue();
+}
+
+/* ---------- ฉบับร่าง (อ่านแล้ว ยังไม่บันทึก) ---------- */
+function isDraft(q){ return q.state === 'DONE' && q.result.status === 'DRAFT'; }
+function isProblem(q){ return isDraft(q) && q.result.baseStatus !== 'OK'; }
+/** สถานะของฉบับร่างในหน้าเว็บ: ok | need (ต้องตรวจ) | fixed | delete */
+function draftState(q){
+  var d = q.decision || {};
+  if (d.action === 'delete') return 'delete';
+  if (d.action === 'fix' || d.action === 'confirm') return 'fixed';
+  return isProblem(q) ? 'need' : 'ok';
+}
+var DRAFT_LABEL = { ok:{t:'ผ่านเงื่อนไข',c:'OK'}, need:{t:'ต้องตรวจสอบ',c:'REVIEW'}, fixed:{t:'ยืนยันแล้ว',c:'OK'}, delete:{t:'ยกเลิก/ตัดออก',c:'CANCELLED'} };
+function viewOf(q){
+  var r = q.result, d = q.decision || {};
+  return d.action === 'fix' ? Object.assign({}, r, { date:d.date, time:d.time, amount:Number(d.amount), account:d.account }) : r;
+}
+function unsaved(){ return S.queue.filter(isDraft); }
+function unresolved(){ return S.queue.filter(q => isDraft(q) && draftState(q) === 'need'); }
+
+function qStatus(q){
+  if (isDraft(q)) return DRAFT_LABEL[draftState(q)].c;
+  return q.state === 'DONE' ? q.result.status : q.state;
+}
+function qLabel(q){
+  if (isDraft(q)) {
+    const st = draftState(q), v = viewOf(q);
+    return st === 'need' ? 'ต้องตรวจสอบ' : st === 'delete' ? 'จะลบ' : (v.amount != null ? money(v.amount) : 'ผ่าน');
+  }
+  const st = qStatus(q);
+  return (q.state === 'DONE' && q.result.amount != null && ['NOT_SLIP','DISCARDED'].indexOf(st) < 0) ? money(q.result.amount) : (STATUS[st]||{t:st}).t;
+}
+function renderQueue(){
+  $('queueWrap').classList.toggle('hidden', !S.queue.length);
+  $('qgrid').innerHTML = S.queue.map(q => `<div class="qi ${q.state==='WORK'?'working':''}" id="qi${q.id}" title="${esc(q.name)}">
+      ${q.url ? `<img src="${q.url}" alt="" loading="lazy" onclick="openQueueItem(${q.id})">`
+              : `<div class="noimg" onclick="openQueueItem(${q.id})">รูปจากระบบ</div>`}
+      ${(!S.running && q.state!=='DONE') ? `<button class="x" onclick="removeQ(${q.id})" aria-label="เอาออก">✕</button>` : ''}
+      <div class="st s-${qStatus(q)}">${esc(qLabel(q))}</div>
+    </div>`).join('');
+  updateProgress();
+}
+function removeQ(id){
+  const i = S.queue.findIndex(q => q.id === id);
+  if (i >= 0) { revoke(S.queue[i]); S.queue.splice(i,1); renderQueue(); renderBatch(); }
+}
+function revoke(q){ if (q.url && q.url.indexOf('blob:') === 0) URL.revokeObjectURL(q.url); }
+function clearQueue(force){
+  if (S.running && !force) return;
+  const n = unsaved().length;
+  if (n && !force && !confirm('มี ' + n + ' ใบที่อ่านแล้วแต่ยังไม่ได้บันทึก\nล้างรายการหรือไม่? (ข้อมูลร่างยังอยู่ในระบบ กลับมาตรวจและบันทึกต่อได้จากหน้าสรุปรายวัน)')) return;
+  S.queue.forEach(revoke);
+  S.queue = []; renderQueue(); renderBatch();
+  if (n && S.token) loadDaily();
+}
+function updateProgress(){
+  const n = S.queue.length;
+  const done = S.queue.filter(q => q.state === 'DONE').length;
+  const err = S.queue.filter(q => q.state === 'ERROR').length;
+  const wait = S.queue.filter(q => q.state === 'WAIT').length;
+  const drafts = unsaved(), need = unresolved().length;
+  const ds = st => drafts.filter(q => draftState(q) === st).length;
+  const by = st => S.queue.filter(q => q.state==='DONE' && q.result.status===st).length;
+  $('progBar').style.width = n ? ((done+err)/n*100)+'%' : '0';
+  let txt;
+  if (S.running) txt = `<span class="spin"></span> กำลังอ่าน… ${done+err}/${n} รูป`;
+  else if (drafts.length) txt = `อ่านแล้ว ${drafts.length} ใบ <b>(ยังไม่บันทึก)</b> • ผ่านเงื่อนไข ${ds('ok')+ds('fixed')}` +
+      (need ? ` • <b style="color:var(--warn)">ต้องตรวจสอบ ${need}</b>` : '') + (ds('delete') ? ` • จะลบ ${ds('delete')}` : '');
+  else txt = `${n} รูป • บันทึกแล้ว ${by('OK')}` + (by('REVIEW') ? ` • รอตรวจสอบ ${by('REVIEW')}` : '') +
+      (by('DUP_PENDING') ? ` • <b style="color:var(--dup)">ซ้ำ? ${by('DUP_PENDING')}</b>` : '') +
+      (by('DUPLICATE') ? ` • ตัดออก ${by('DUPLICATE')}` : '') + (by('DISCARDED') ? ` • ลบออก ${by('DISCARDED')}` : '') +
+      (by('NOT_SLIP') ? ` • ไม่ใช่สลิป ${by('NOT_SLIP')}` : '');
+  txt += (err ? ` • <b style="color:var(--bad)">อ่านไม่สำเร็จ ${err}</b>` : '') + (wait && !S.running ? ` • รออ่าน ${wait}` : '');
+  $('progText').innerHTML = txt;
+  $('btnStart').disabled = S.running || !wait;
+  $('btnStart').classList.toggle('hidden', !wait && !S.running && drafts.length > 0);
+  $('btnRetry').classList.toggle('hidden', !err || S.running);
+  $('btnClear').disabled = S.running;
+  const keep = drafts.length - ds('delete');
+  ['btnSave','btnSave2'].forEach(idb => {
+    const b = $(idb);
+    b.classList.toggle('hidden', !drafts.length || S.running);
+    b.classList.toggle('warn', need > 0); b.classList.toggle('primary', need === 0);
+    b.textContent = need ? `ตรวจสอบ ${need} ใบก่อนบันทึก` : `💾 บันทึกข้อมูล ${keep} ใบ`;
+    b.disabled = false;
+  });
+}
+
+function compressImage(file){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const w = img.naturalWidth, h = img.naturalHeight;
+      const s = Math.min(1, MAX_SIDE / Math.max(w, h));
+      const c = document.createElement('canvas');
+      c.width = Math.round(w*s); c.height = Math.round(h*s);
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0,0,c.width,c.height);
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg', JPEG_Q).split(',')[1]);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('เปิดไฟล์รูปไม่ได้ (ลองบันทึกเป็น JPG/PNG)')); };
+    img.src = url;
+  });
+}
+
+async function startProcessing(retryOnly){
+  if (S.running) return;
+  const todo = S.queue.filter(q => retryOnly ? q.state === 'ERROR' : (q.state === 'WAIT' || q.state === 'ERROR'));
+  if (!todo.length) return;
+  S.running = true;
+  if (!retryOnly || !S.batchId) S.batchId = 'B' + Date.now().toString(36).toUpperCase();
+  todo.forEach(q => { q.state = 'WAIT'; q.error = ''; });
+  renderQueue();
+  let i = 0;
+  const worker = async () => { while (i < todo.length && S.token) { await processOne(todo[i++]); } };
+  await Promise.all(Array.from({length: CONCURRENCY}, worker));
+  S.running = false;
+  renderQueue(); renderBatch();
+  afterBatch();
+}
+
+async function processOne(q){
+  q.state = 'WORK'; patchQ(q);
+  try{
+    const b64 = await compressImage(q.file);
+    q.result = await api('apiProcessSlip', S.token, { batchId: S.batchId, fileName: q.name, mimeType: 'image/jpeg', data: b64 });
+    q.state = 'DONE';
+  }catch(e){
+    q.state = 'ERROR'; q.error = e.message;
+  }
+  patchQ(q); renderBatch(); updateProgress();
+}
+function patchQ(q){
+  const el = $('qi'+q.id); if(!el) return;
+  el.classList.toggle('working', q.state === 'WORK');
+  const x = el.querySelector('.x'); if (x && S.running) x.remove();
+  const st = el.querySelector('.st'); st.className = 'st s-' + qStatus(q); st.textContent = qLabel(q);
+}
+
+function batchDupIds(){
+  return S.queue.filter(q => q.state === 'DONE' && q.result.status === 'DUP_PENDING').map(q => q.result.id);
+}
+function afterBatch(){
+  const errs = S.queue.filter(q => q.state === 'ERROR');
+  if (errs.length) toast(`อ่านไม่สำเร็จ ${errs.length} รูป: ${errs[0].error}`, true);
+  const need = unresolved();
+  if (need.length) openReview(need.map(q => q.id));      // เด้ง popup ให้ตรวจใบที่ไม่ผ่านเงื่อนไข
+  else if (unsaved().length) {
+    toast('อ่านครบแล้ว ทุกใบผ่านเงื่อนไข — ตรวจรายการแล้วกด "บันทึกข้อมูล"');
+    $('batchCard').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+function renderBatch(){
+  const rows = S.queue.filter(q => q.state === 'DONE' || q.state === 'ERROR');
+  $('batchCard').classList.toggle('hidden', !rows.length);
+  $('btnBatchDup').classList.toggle('hidden', !batchDupIds().length);
+  $('batchBody').innerHTML = rows.map((q, i) => {
+    if (q.state === 'ERROR') return `<tr class="click" onclick="openQueueItem(${q.id})"><td>${i+1}</td><td colspan="3" class="note">${esc(q.name)}</td><td>${pill('ERROR')}</td><td class="note warn">${esc(q.error)}</td></tr>`;
+    const r = viewOf(q);
+    let statusHtml, note, cls = '', muted = MUTED.includes(r.status);
+    if (isDraft(q)) {
+      const st = draftState(q), L = DRAFT_LABEL[st];
+      statusHtml = `<span class="pill s-${L.c}">${L.t}</span>`;
+      note = st === 'need' ? r.note : st === 'fixed' ? 'ผู้ใช้ยืนยันข้อมูลแล้ว — จะนับยอดเมื่อบันทึก' : st === 'delete' ? 'ยกเลิกรายการ — จะตัดออกเมื่อบันทึก' : r.note;
+      cls = st === 'need' ? 'warn' : ''; muted = st === 'delete';
+    } else {
+      statusHtml = pill(r.status); note = r.note;
+      cls = r.status === 'REVIEW' ? 'warn' : r.status === 'DUP_PENDING' ? 'dup' : '';
+    }
+    return `<tr class="click ${muted?'muted':''}" onclick="openQueueItem(${q.id})">
+      <td>${i+1}</td><td class="num dt">${esc(dt(r.date, r.time))}</td>
+      <td class="r num amt"><b>${esc(baht(r.amount))}</b></td>
+      <td>${accLabel(r.account)}</td><td>${statusHtml}</td>
+      <td class="note ${cls}">${esc(note)}</td></tr>`;
+  }).join('');
+  updateProgress();
+}
+
+function openQueueItem(id){
+  const q = S.queue.find(x => x.id === id); if(!q) return;
+  if (isDraft(q)) {                                  // เปิดหน้าตรวจ: ใบที่ต้องตรวจทั้งหมด + ใบที่แตะ
+    const ids = unresolved().map(x => x.id); if (ids.indexOf(q.id) < 0) ids.push(q.id);
+    return openReview(ids, q.id);
+  }
+  if (q.state === 'DONE') return openEdit(q.result, q.url);
+  openModal(`<div class="mh"><h3>${esc(q.name)}</h3><button class="btn ghost" onclick="closeModal()">✕</button></div>
+    <div class="mb"><div class="slip-img"><img src="${q.url}" alt=""></div>
+    ${q.error ? `<p class="note warn" style="max-width:none">${esc(q.error)}</p>` : ''}</div>`);
+}
+function localUrlFor(slipId){
+  const q = S.queue.find(x => x.state === 'DONE' && x.result.id === slipId);
+  return q && q.url ? q.url : null;
+}
+function syncQueue(updated){
+  const q = S.queue.find(x => x.state === 'DONE' && x.result.id === updated.id);
+  if (q) { q.result = Object.assign({}, q.result, updated); patchQ(q); }
+  renderBatch(); updateProgress();
+}
+
+/* ===================== ตรวจสลิปก่อนบันทึก (ทีละใบ) ===================== */
+var REV = [], REVI = 0;
+var ISSUE_CATS = [
+  { key:'date',    icon:'📅', t:'วันที่ไม่ตรงกับวันที่อัปโหลด', re:/ไม่ตรงกับวันที่อัปโหลด|วันที่อยู่ในอนาคต/ },
+  { key:'unclear', icon:'🔍', t:'ข้อมูลไม่ชัดเจน / ไม่ครบ',     re:/อ่าน.*ไม่ได้|ไม่มั่นใจ|ผิดปกติ/ },
+  { key:'account', icon:'🏦', t:'ข้อมูลบัญชีร้านไม่ครบ',        re:/บัญชี/ },
+  { key:'notslip', icon:'🚫', t:'ไม่ใช่สลิปโอนเงิน',            re:/ไม่ใช่สลิป|ไม่สำเร็จ/ },
+];
+function issueList(q){
+  if (!isProblem(q)) return [];
+  return String(q.result.note || '').split(' • ').filter(Boolean).map(t => {
+    const c = ISSUE_CATS.find(c => c.re.test(t)) || { key:'other', icon:'⚠', t:'อื่นๆ' };
+    return { cat: c.key, icon: c.icon, text: t.replace(/\(สลิป (\d{4}-\d{2}-\d{2}), อัปโหลด (\d{4}-\d{2}-\d{2})\)/, (m, a, b) => '') };
+  });
+}
+function revAccOpts(sel){
+  return S.accounts.filter(a => a.active || a.code === sel)
+    .map(a => `<option value="${esc(a.code)}" ${a.code===sel?'selected':''}>${esc(a.code)} — ${esc(a.name)}</option>`).join('');
+}
+function upDateOf(q){ return String(q.result.uploadedAt || '').slice(0, 10) || isoToday(); }
+function revItems(){ return REV.map(id => S.queue.find(q => q.id === id)).filter(Boolean); }
+
+function openReview(qids, startId){
+  REV = qids.slice();
+  const items = revItems(); if (!items.length) return;
+  const firstNeed = items.findIndex(q => draftState(q) === 'need');
+  REVI = startId ? Math.max(0, REV.indexOf(startId)) : Math.max(0, firstNeed);
+  // นับปัญหาแยกประเภท
+  const cnt = {}; items.forEach(q => { const seen = {}; issueList(q).forEach(i => { if (!seen[i.cat]) { seen[i.cat] = 1; cnt[i.cat] = (cnt[i.cat]||0) + 1; } }); });
+  const probs = items.filter(isProblem).length;
+  openModal(`<div class="mh"><h3>${probs ? '⚠ ตรวจสอบสลิปก่อนบันทึก' : 'ตรวจสอบสลิป'}</h3><button class="btn ghost" onclick="closeModal()">✕</button></div>
+    <div class="mb rv-mb">
+      ${probs ? `<div class="rv-alert">
+        <div class="rv-alert-h">พบ <b>${probs}</b> ใบที่ต้องตรวจสอบก่อนบันทึก</div>
+        <div class="rv-cats">${ISSUE_CATS.concat([{key:'other',icon:'⚠',t:'อื่นๆ'}]).filter(c => cnt[c.key])
+          .map(c => `<span class="rv-cat cat-${c.key}">${c.icon} ${c.t} <b>${cnt[c.key]}</b></span>`).join('')}</div>
+        <div class="rv-alert-s">ตรวจรูปกับข้อมูลทีละใบ แล้วเลือก <b>ยกเลิกรายการ</b> (ตัดสลิปออก ไม่นับยอด) หรือ <b>ยืนยันข้อมูล</b> (บันทึกและนับยอด)</div>
+      </div>` : ''}
+      <div class="rv-strip" id="rvStrip"></div>
+      <div id="rvCard"></div>
+    </div>
+    <div class="mf" id="revFoot"></div>`, true);
+  revRender();
+}
+function revGo(i){ REVI = Math.max(0, Math.min(REV.length - 1, i)); revRender(); const mb = document.querySelector('.rv-mb'); if (mb) mb.scrollTop = 0; }
+
+function revRender(){
+  const items = revItems(); if (!items.length) return;
+  $('rvStrip').innerHTML = items.map((q, i) => { const st = draftState(q);
+    return `<button class="rv-dot ${st} ${i === REVI ? 'cur' : ''}" onclick="revGo(${i})" title="${esc(DRAFT_LABEL[st].t)}">${i + 1}</button>`; }).join('');
+  const q = items[REVI], r = q.result, v = viewOf(q), st = draftState(q), iss = issueList(q);
+  const up = upDateOf(q);
+  const dateDiff = v.date && v.date !== up;
+  const has = k => iss.some(i => i.cat === k);
+  const bad = { date: !v.date || has('date'), time: !v.time, amount: !(v.amount > 0), account: !v.account };
+  const sug = r.partial && !v.account ? acc(r.partial) : null;
+  $('rvCard').innerHTML = `<div class="rv ${st}">
+    <div class="rv-img" id="revImg${q.id}">${q.url ? `<img src="${q.url}" onclick="showImage(this.src)" alt="สลิป">` : '<span class="spin"></span>'}
+      <div class="rv-zoom">แตะรูปเพื่อขยาย</div></div>
+    <div class="rv-side">
+      <div class="rv-head"><span class="rv-no">ใบที่ ${REVI + 1} / ${items.length}</span>
+        <span class="rv-state ${st}">${st === 'need' ? '⚠ ต้องตรวจสอบ' : st === 'delete' ? '🗑 ยกเลิกรายการ' : st === 'fixed' ? '✓ ยืนยันแล้ว' : '✓ ผ่านเงื่อนไข'}</span></div>
+      <div class="rv-file">${esc(q.name)}</div>
+      ${iss.length ? `<ul class="rv-issues">${iss.map(i => `<li class="cat-${i.cat}"><span>${i.icon}</span><span>${esc(i.text)}</span></li>`).join('')}</ul>` : ''}
+      ${dateDiff ? `<div class="rv-datecmp"><div><small>วันที่ในสลิป</small><b>${thDate(v.date)}</b></div><div class="neq">≠</div>
+        <div><small>วันที่อัปโหลด</small><b>${thDate(up)}</b></div></div>` : ''}
+      ${sug ? `<div class="rv-hint">ระบบพบข้อมูลใกล้เคียงบัญชี <b>${esc(sug.code)} ${esc(sug.name)}</b> — ตรวจรูปให้แน่ใจก่อนเลือก</div>` : ''}
+      <div class="rv-fields ${st === 'delete' ? 'off' : ''}">
+        <div class="field ${bad.date ? 'bad' : ''}"><label>วันที่รับเงิน</label><input class="inp" type="date" id="rD" value="${esc(v.date||'')}" oninput="revDirty(${q.id})"></div>
+        <div class="field ${bad.time ? 'bad' : ''}"><label>เวลา</label><input class="inp" type="time" id="rT" value="${esc(v.time||'')}" oninput="revDirty(${q.id})"></div>
+        <div class="field ${bad.amount ? 'bad' : ''}"><label>จำนวนเงิน (บาท)</label><input class="inp num rv-amt" type="number" step="0.01" min="0" inputmode="decimal" id="rA" value="${v.amount ?? ''}" oninput="revDirty(${q.id})"></div>
+        <div class="field ${bad.account ? 'bad' : ''}"><label>บัญชีร้าน</label><select class="inp" id="rC" onchange="revDirty(${q.id})"><option value="">— เลือกบัญชี —</option>${revAccOpts(v.account)}</select></div>
+      </div>
+      ${st === 'delete' ? `<div class="rv-done del">🗑 ยกเลิกรายการนี้แล้ว — สลิปจะถูกตัดออก ไม่นับยอด <button class="btn sm" onclick="revUndo(${q.id})">เปลี่ยนใจ</button></div>`
+        : st === 'fixed' ? `<div class="rv-done ok">✓ ยืนยันแล้ว — จะบันทึกและนับยอดเมื่อกด "บันทึกข้อมูล" <button class="btn sm" onclick="revUndo(${q.id})">เปลี่ยนใจ</button></div>`
+        : `<div class="rv-actions">
+            <button class="btn rv-del" onclick="revCancel(${q.id})">🗑 ยกเลิกรายการ<small>ตัดสลิปนี้ออก ไม่นับยอด</small></button>
+            <button class="btn rv-ok" onclick="revConfirm(${q.id})">✓ ยืนยันข้อมูล<small>บันทึกและนับยอด</small></button>
+          </div>`}
+      <div class="rv-nav">
+        <button class="btn sm" ${REVI === 0 ? 'disabled' : ''} onclick="revGo(${REVI - 1})">‹ ใบก่อนหน้า</button>
+        <button class="btn sm" ${REVI === items.length - 1 ? 'disabled' : ''} onclick="revGo(${REVI + 1})">ใบถัดไป ›</button>
+      </div>
+    </div></div>`;
+  if (!q.url) loadRevImg(q);
+  revFoot();
+}
+function loadRevImg(q){
+  api('apiGetSlipImage', S.token, q.result.id).then(r => {
+    q.url = 'data:' + r.mime + ';base64,' + r.data;
+    const el = $('revImg' + q.id); if (el) el.innerHTML = `<img src="${q.url}" onclick="showImage(this.src)" alt="สลิป"><div class="rv-zoom">แตะรูปเพื่อขยาย</div>`;
+    const qi = $('qi' + q.id); if (qi) { const ph = qi.querySelector('.noimg'); if (ph) ph.outerHTML = `<img src="${q.url}" alt="" onclick="openQueueItem(${q.id})">`; }
+  }).catch(e => { const el = $('revImg' + q.id); if (el) el.textContent = e.message; });
+}
+/** แก้ช่องข้อมูลหลังยืนยันแล้ว → ต้องยืนยันใหม่ */
+function revDirty(id){
+  const q = S.queue.find(x => x.id === id);
+  if (q && q.decision && q.decision.action !== 'delete') { q.decision = null; revRefreshState(q); }
+}
+function revRefreshState(q){ patchQ(q); renderBatch(); revRender(); }
+function revNextUnresolved(){
+  const items = revItems();
+  for (let k = 1; k <= items.length; k++) { const i = (REVI + k) % items.length; if (draftState(items[i]) === 'need') return revGo(i); }
+  revRender();   // ครบแล้ว
+}
+function revConfirm(id){
+  const q = S.queue.find(x => x.id === id); if (!q) return;
+  const f = { date: $('rD').value, time: $('rT').value, amount: $('rA').value, account: $('rC').value };
+  const miss = [];
+  if (!f.date) miss.push('วันที่'); if (!f.time) miss.push('เวลา');
+  if (!(Number(f.amount) > 0)) miss.push('จำนวนเงิน'); if (!f.account) miss.push('บัญชีร้าน');
+  if (miss.length) { toast('กรอก ' + miss.join(', ') + ' ให้ครบก่อนยืนยัน', true); return; }
+  const r = q.result;
+  const same = f.date === (r.date||'') && f.time === (r.time||'') && Number(f.amount) === Number(r.amount) && f.account === (r.account||'');
+  q.decision = (same && !isProblem(q)) ? { action:'confirm' } : Object.assign({ action:'fix' }, f);
+  patchQ(q); renderBatch(); setTimeout(revNextUnresolved, 250);
+}
+function revCancel(id){
+  const q = S.queue.find(x => x.id === id); if (!q) return;
+  q.decision = { action:'delete' };
+  patchQ(q); renderBatch(); setTimeout(revNextUnresolved, 250);
+}
+function revUndo(id){
+  const q = S.queue.find(x => x.id === id); if (!q) return;
+  q.decision = null; revRefreshState(q);
+}
+function revFoot(){
+  const f = $('revFoot'); if (!f) return;
+  const need = unresolved().length, drafts = unsaved();
+  const keep = drafts.filter(q => draftState(q) !== 'delete').length, del = drafts.length - keep;
+  f.innerHTML = `<span class="rv-sum">${need
+      ? `<b style="color:var(--warn)">เหลือต้องตรวจสอบ ${need} ใบ</b>`
+      : `<b style="color:var(--ok)">ตรวจครบแล้ว</b> — บันทึกและนับยอด ${keep} ใบ${del ? ` • ตัดออก ${del} ใบ` : ''}`}</span>
+    <button class="btn" onclick="closeModal()">ปิด (ทำต่อภายหลัง)</button>
+    <button class="btn primary" ${need ? 'disabled' : ''} onclick="commitDrafts(this)">💾 บันทึกข้อมูล ${keep} ใบ</button>`;
+}
+
+function saveDrafts(btn){
+  const need = unresolved();
+  if (need.length) return openReview(need.map(q => q.id));
+  commitDrafts(btn);
+}
+async function commitDrafts(btn){
+  const drafts = unsaved(); if (!drafts.length) return;
+  if (unresolved().length) return openReview(unresolved().map(q => q.id));
+  const decisions = drafts.map(q => {
+    const d = q.decision || {};
+    if (d.action === 'delete') return { id: q.result.id, action: 'delete', reason: 'ผู้ใช้ยกเลิกรายการก่อนบันทึก' };
+    if (d.action === 'fix') return { id: q.result.id, action: 'fix', date: d.date, time: d.time, amount: d.amount, account: d.account };
+    return { id: q.result.id, action: 'keep' };
+  });
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spin"></span> กำลังบันทึก…'; }
+  try{
+    const r = await api('apiCommitDrafts', S.token, decisions);
+    const map = {}; r.results.forEach(x => map[x.id] = x);
+    S.queue.forEach(q => { if (q.state === 'DONE' && map[q.result.id]) { q.result = map[q.result.id]; q.decision = null; } });
+    closeModal(); renderQueue(); renderBatch();
+    const s = r.summary;
+    toast(`บันทึกข้อมูลแล้ว ${s.ok} ใบ` + (s.dup ? ` • ซ้ำรอยืนยัน ${s.dup}` : '') + (s.deleted ? ` • ลบออก ${s.deleted}` : '') +
+          (s.review ? ` • รอตรวจสอบ ${s.review}` : ''));
+    const freq = {};
+    r.results.forEach(x => { if (x.status === 'OK' && x.date) freq[x.date] = (freq[x.date]||0) + 1; });
+    const top = Object.keys(freq).sort((a,b) => freq[b]-freq[a])[0];
+    if (top) $('dailyDate').value = top;
+    loadDaily(); if (S.dash) loadDash(true);
+    const dups = r.results.filter(x => x.status === 'DUP_PENDING').map(x => x.id);
+    if (dups.length) openDupModal(dups);                 // ต่อด้วย popup ตรวจข้อมูลซ้ำ
+  }catch(e){ toast(e.message, true); if (btn) btn.disabled = false; updateProgress(); revFoot(); }
+}
+
+/** โหลดฉบับร่างที่ค้าง (อ่านแล้วแต่ยังไม่บันทึก) กลับมาตรวจ/บันทึกต่อ */
+async function resumeDrafts(){
+  try{
+    const list = await api('apiGetDrafts', S.token);
+    const have = {}; S.queue.forEach(q => { if (q.state === 'DONE') have[q.result.id] = 1; });
+    list.forEach(x => { if (!have[x.id]) S.queue.push({ id: ++qSeq, key: 'srv:' + x.id, name: x.fileName || x.id, url: '', state: 'DONE', result: x, error: '' }); });
+    renderQueue(); renderBatch();
+    const need = unresolved();
+    if (need.length) openReview(need.map(q => q.id));
+    else $('queueWrap').scrollIntoView({behavior:'smooth', block:'start'});
+  }catch(e){ toast(e.message, true); }
+}
+function refreshAfterChange(){ loadDaily(); if (S.dash) loadDash(true); }
+
+/* ===================== EDIT / CONFIRM SLIP ===================== */
+function openEdit(slip, localUrl){
+  localUrl = localUrl || localUrlFor(slip.id);
+  const opts = S.accounts.filter(a => a.active || a.code === slip.account)
+    .map(a => `<option value="${esc(a.code)}" ${a.code===slip.account?'selected':''}>${esc(a.code)} — ${esc(a.name)}${a.bank?' ('+esc(a.bank)+')':''}</option>`).join('');
+  const noteColor = slip.status === 'OK' ? 'var(--ok)' : slip.status === 'DUP_PENDING' ? 'var(--dup)' : 'var(--warn)';
+  openModal(`<div class="mh"><h3>ตรวจสอบสลิป</h3>${pill(slip.status)}<button class="btn ghost" onclick="closeModal()">✕</button></div>
+    <div class="mb"><div class="edit-grid">
+      <div><div class="slip-img" id="editImg">${localUrl ? `<img src="${localUrl}" onclick="showImage(this.src)">` : '<span class="spin"></span>'}</div>
+        ${slip.hasImage || slip.status !== 'DUPLICATE' ? `<details class="ocr-box" ontoggle="if(this.open)loadReadText('${esc(slip.id)}')">
+          <summary>ข้อความที่ระบบอ่านได้จากรูป</summary><pre id="readText"><span class="spin"></span></pre></details>` : ''}</div>
+      <div>
+        <div class="three">
+          <div><div class="l">วันที่และเวลารับเงิน</div><div class="v num">${esc(dt(slip.date, slip.time))}</div></div>
+          <div><div class="l">จำนวนเงิน</div><div class="v num">${esc(baht(slip.amount))}</div></div>
+          <div><div class="l">บัญชีร้าน</div><div class="v">${accLabel(slip.account)}</div></div>
+        </div>
+        <div class="ai-box">
+          ข้อมูลผู้รับบนสลิป: <b>${esc(slip.receiverDetails || [slip.receiverName, slip.receiverAccount].filter(Boolean).join(' | ') || '—')}</b><br>
+          ผู้โอน: ${esc(slip.senderName||'—')} ${esc(slip.senderBank)} ${slip.refNo ? '• เลขอ้างอิง ' + esc(slip.refNo) : ''}<br>
+          ${slip.note ? `<span style="color:${noteColor}">${esc(slip.note)}</span><br>` : ''}
+          <span style="color:var(--ink-3)">รหัส ${esc(slip.id)} • อัปโหลดโดย ${esc(slip.uploadedBy)} ${esc(slip.uploadedAt)}${slip.editedBy?` • แก้ไขโดย ${esc(slip.editedBy)} ${esc(slip.editedAt)}`:''}</span>
+        </div>
+        ${slip.status === 'DUP_PENDING' ? `<div class="banner dup" style="margin-bottom:12px">รายการนี้อาจซ้ำกับข้อมูลเดิม <button class="btn sm" onclick="openDupModal(['${esc(slip.id)}'])">เปิดหน้าตรวจซ้ำ</button></div>` : ''}
+        <div class="two">
+          <div class="field"><label>วันที่รับเงิน</label><input class="inp" type="date" id="eDate" value="${esc(slip.date)}"></div>
+          <div class="field"><label>เวลา</label><input class="inp" type="time" id="eTime" value="${esc(slip.time)}"></div>
+        </div>
+        <div class="field"><label>จำนวนเงิน (บาท)</label><input class="inp num" type="number" step="0.01" min="0" inputmode="decimal" id="eAmt" value="${slip.amount ?? ''}" style="font-size:20px;font-weight:700"></div>
+        <div class="field"><label>บัญชีร้าน</label><select class="inp" id="eAcc"><option value="">— เลือกบัญชี —</option>${opts}</select></div>
+        <div class="field"><label>เลขอ้างอิง</label><input class="inp num" id="eRef" value="${esc(slip.refNo)}"></div>
+        <div class="field"><label>หมายเหตุ</label><input class="inp" id="eNote" placeholder="ไม่บังคับ"></div>
+      </div>
+    </div></div>
+    <div class="mf">
+      ${isAdmin() && slip.status !== 'CANCELLED' ? `<button class="btn danger" style="margin-right:auto" onclick="cancelSlip('${esc(slip.id)}', this)">ยกเลิกรายการ</button>` : ''}
+      <button class="btn" onclick="closeModal()">ปิด</button>
+      <button class="btn primary" id="eSave">${slip.status==='OK'?'บันทึกการแก้ไข':'ยืนยันข้อมูล (นับยอด)'}</button>
+    </div>`, true);
+  $('eSave').onclick = () => saveEdit(slip.id, $('eSave'), false);
+  if (!localUrl) loadSlipImage(slip.id, 'editImg');
+}
+var READ_CACHE = {};
+function loadSlipImage(id, elId){
+  api('apiGetSlipImage', S.token, id)
+    .then(r => { READ_CACHE[id] = r; const el = $(elId); if (el) el.innerHTML = `<img src="data:${r.mime};base64,${r.data}" onclick="showImage(this.src)">`; })
+    .catch(e => { const el = $(elId); if (el) el.textContent = e.message; });
+}
+/** แสดงข้อความ OCR — ใช้ดูว่าควรเพิ่มคำใดใน "ข้อมูลที่ปรากฏบนสลิป" ของบัญชีร้าน */
+function loadReadText(id){
+  const show = r => { const el = $('readText'); if (el) el.textContent =
+    (r.readText || '(ไม่มีข้อความ)') + (r.engine ? '\n\n— อ่านด้วย: ' + (r.engine === 'drive' ? 'Google Drive OCR' : r.engine) : ''); };
+  if (READ_CACHE[id]) return show(READ_CACHE[id]);
+  api('apiGetSlipImage', S.token, id).then(r => { READ_CACHE[id] = r; show(r); })
+    .catch(e => { const el = $('readText'); if (el) el.textContent = e.message; });
+}
+
+async function saveEdit(id, btn, allowDup){
+  const ch = { date: $('eDate').value, time: $('eTime').value, account: $('eAcc').value,
+               amount: $('eAmt').value, refNo: $('eRef').value, note: $('eNote').value, allowDup };
+  if (!ch.account) return toast('กรุณาเลือกบัญชีร้าน', true);
+  btn.disabled = true;
+  try{
+    const updated = await api('apiUpdateSlip', S.token, id, ch);
+    closeModal(); toast('บันทึกแล้ว — นับรวมในยอดของ ' + thDate(updated.date));
+    syncQueue(updated); refreshAfterChange();
+  }catch(e){
+    btn.disabled = false;
+    if (e.code === 'DUP') {
+      if (confirm('⚠ ' + e.message + '\n\nวันที่-เวลา จำนวนเงิน และบัญชีร้านตรงกันทั้ง 3 ส่วน\nกด OK ถ้ายืนยันว่าเป็น "คนละรายการ" และต้องการนับยอดทั้งคู่')) saveEdit(id, btn, true);
+    } else toast(e.message, true);
+  }
+}
+
+async function cancelSlip(id, btn){
+  const reason = prompt('เหตุผลที่ยกเลิกรายการนี้ (บันทึกไว้ตรวจย้อนหลัง)');
+  if (reason === null) return;
+  btn.disabled = true;
+  try{
+    const updated = await api('apiCancelSlip', S.token, id, reason);
+    closeModal(); toast('ยกเลิกรายการแล้ว');
+    syncQueue(updated); refreshAfterChange();
+  }catch(e){ toast(e.message, true); btn.disabled = false; }
+}
+
+/* ===================== DUPLICATE POPUP ===================== */
+var DUP = [];
+async function openDupModal(ids){
+  openModal(`<div class="mh"><h3>⚠ ตรวจสอบข้อมูลซ้ำซ้อน</h3><button class="btn ghost" onclick="closeModal()">✕</button></div>
+    <div class="mb" id="dupBody"><div class="loading"><span class="spin"></span></div></div>
+    <div class="mf" id="dupFoot"></div>`, true);
+  try{
+    DUP = await api('apiGetDupPending', S.token, ids || []);
+    renderDupModal();
+  }catch(e){ $('dupBody').innerHTML = `<div class="loading">${esc(e.message)}</div>`; }
+}
+function dupSide(s, title, imgId){
+  if (!s) return `<div><h4>${title}</h4><span class="note">ไม่พบรายการต้นฉบับ</span></div>`;
+  return `<div><h4>${title}</h4>
+    <div class="k num">${esc(dt(s.date, s.time))}</div>
+    <div class="k num">${esc(baht(s.amount))}</div>
+    <div style="margin:4px 0">${accLabel(s.account)}</div>
+    <div class="note" style="max-width:none">เลขอ้างอิง ${esc(s.refNo || '—')} • ${pill(s.status)}<br>อัปโหลดโดย ${esc(s.uploadedBy)} ${esc(s.uploadedAt)}</div>
+    <button class="btn sm" style="margin-top:6px" onclick="dupImage('${esc(s.id)}', this)">ดูรูปสลิป</button>
+  </div>`;
+}
+function renderDupModal(){
+  if (!DUP.length) {
+    $('dupBody').innerHTML = '<div class="loading">ไม่มีรายการซ้ำที่รอยืนยัน</div>';
+    $('dupFoot').innerHTML = '<button class="btn" onclick="closeModal()">ปิด</button>';
+    return;
+  }
+  DUP.forEach(d => {
+    // เลขอ้างอิงต่างกันชัดเจน → อาจเป็นคนละรายการ จึงไม่ติ๊กตัดออกให้อัตโนมัติ
+    d.refDiff = !!(d.slip.refNo && d.orig && d.orig.refNo && d.slip.refNo !== d.orig.refNo);
+    if (d.remove === undefined) d.remove = !d.refDiff;
+  });
+  $('dupBody').innerHTML = `
+    <p style="margin:0 0 14px;color:var(--ink-2)">พบ <b>${DUP.length}</b> รายการที่ <b>วันที่-เวลา • จำนวนเงิน • บัญชีร้าน</b> ตรงกับข้อมูลที่บันทึกไว้แล้ว
+    รายการเหล่านี้ <u>ยังไม่ถูกนับในยอด</u> — ติ๊ก "ตัดออก" สำหรับรายการที่ซ้ำ แล้วกดยืนยันเพื่อให้เหลือข้อมูลชุดเดียว</p>
+    ${DUP.map((d, i) => `<div class="dup-item ${d.remove?'on':''}" id="dup${i}">
+      <div class="dup-top">
+        <label><input type="checkbox" ${d.remove?'checked':''} onchange="DUP[${i}].remove=this.checked;$('dup${i}').classList.toggle('on',this.checked);dupFootRender()"> ตัดออก (ซ้ำ)</label>
+        ${d.refDiff ? '<span class="flag">เลขอ้างอิงต่างกัน — อาจเป็นคนละรายการ ตรวจรูปก่อนตัดออก</span>' : ''}
+        ${d.slip.note ? `<span class="note dup" style="margin-left:auto">${esc(d.slip.note)}</span>` : ''}
+      </div>
+      <div class="dup-cols">${dupSide(d.slip, 'รายการใหม่ (ที่จะตัดออก)')}${dupSide(d.orig, 'ซ้ำกับรายการเดิม (คงไว้)')}</div>
+    </div>`).join('')}`;
+  dupFootRender();
+}
+function dupFootRender(){
+  const rm = DUP.filter(d => d.remove).length, keep = DUP.length - rm;
+  $('dupFoot').innerHTML = `<span class="note" style="margin-right:auto;max-width:none">ตัดออก ${rm} • เก็บไว้ (นับยอด) ${keep}</span>
+    <button class="btn" onclick="closeModal()">ไว้ตรวจภายหลัง</button>
+    <button class="btn warn" onclick="resolveDup(this)">ยืนยัน${rm ? ' ตัดข้อมูลซ้ำ ' + rm + ' รายการ' : ''}</button>`;
+}
+function dupImage(id, btn){
+  const local = localUrlFor(id);
+  if (local) return showImage(local);
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span>';
+  api('apiGetSlipImage', S.token, id)
+    .then(r => { showImage(`data:${r.mime};base64,${r.data}`); })
+    .catch(e => toast(e.message, true))
+    .finally(() => { btn.disabled = false; btn.textContent = 'ดูรูปสลิป'; });
+}
+async function resolveDup(btn){
+  const keep = DUP.filter(d => !d.remove);
+  if (keep.length && !confirm(`เก็บไว้ ${keep.length} รายการ = ยืนยันว่าเป็นคนละรายการและให้นับยอดด้วย\nดำเนินการต่อหรือไม่?`)) return;
+  btn.disabled = true;
+  try{
+    const r = await api('apiResolveDuplicates', S.token, DUP.map(d => ({ id: d.slip.id, remove: !!d.remove })));
+    closeModal();
+    toast(`ตัดข้อมูลซ้ำออก ${r.removed} รายการ` + (r.kept ? ` • เก็บไว้ ${r.kept} รายการ` : ''));
+    const removedIds = DUP.filter(d => d.remove).map(d => d.slip.id);
+    DUP.forEach(d => {
+      const q = S.queue.find(x => x.state === 'DONE' && x.result.id === d.slip.id);
+      if (q) { q.result.status = removedIds.includes(d.slip.id) ? 'DUPLICATE' : (q.result.baseStatus === 'OK' ? 'OK' : 'REVIEW'); patchQ(q); }
+    });
+    renderBatch(); updateProgress(); refreshAfterChange();
+  }catch(e){ toast(e.message, true); btn.disabled = false; }
+}
+
+/* ===================== DAILY SUMMARY ===================== */
+$('dailyDate').addEventListener('change', () => loadDaily());
+function shiftDay(n){ $('dailyDate').value = addDays($('dailyDate').value || isoToday(), n); loadDaily(); }
+
+var dailyReq = 0;
+async function loadDaily(){
+  const date = $('dailyDate').value || isoToday();
+  const my = ++dailyReq;
+  $('dailyTitle').textContent = '— ' + thDate(date, true);
+  $('dailyBody').innerHTML = '<div class="loading"><span class="spin"></span></div>';
+  try{
+    const d = await api('apiGetDaily', S.token, date);
+    if (my !== dailyReq) return;
+    S.daily = d; renderDaily(d);
+  }catch(e){ if (my === dailyReq) $('dailyBody').innerHTML = `<div class="loading">${esc(e.message)}</div>`; }
+}
+
+function renderDaily(d){
+  let h = '';
+  if (d.draftsMine > unsaved().length) {
+    h += `<div class="banner">📝 <span>มีสลิปที่อ่านแล้วแต่ <b>ยังไม่ได้บันทึก ${d.draftsMine} ใบ</b> — ยังไม่นับในยอด</span>
+      <button class="btn sm" onclick="resumeDrafts()">ตรวจสอบและบันทึก</button></div>`;
+  }
+  if (d.dupPendingAll) {
+    h += `<div class="banner dup">⚠ <span>มีข้อมูลซ้ำรอยืนยัน <b>${d.dupPendingAll}</b> รายการ${d.counts.dupPending ? ` (วันนี้ ${d.counts.dupPending})` : ''} — ยังไม่รวมในยอด</span>
+      <button class="btn sm" onclick="openDupModal([])">ตรวจข้อมูลซ้ำ</button></div>`;
+  }
+  if (d.counts.review || d.pendingAll) {
+    h += `<div class="banner">⚠ <span>${d.counts.review ? `วันนี้มี <b>${d.counts.review}</b> รายการรอตรวจสอบ (ยังไม่รวมในยอด)` : ''}
+      ${d.pendingAll > d.counts.review ? ` • รอตรวจสอบทั้งระบบ ${d.pendingAll} รายการ` : ''}</span>
+      <button class="btn sm" onclick="openPending()">ดูรายการรอตรวจสอบ</button></div>`;
+  }
+  h += '<div class="acc-grid" style="margin-top:4px">' + d.accounts.map(g => `
+    <div class="acc-card">
+      <div class="hd" style="border-top-color:${esc(g.color)}">
+        <span class="acc-badge" style="background:${esc(g.color)}">${esc(g.code)}</span>
+        <div><div class="nm">${esc(g.name)}</div><div class="bk">${esc(g.bank)}</div></div>
+      </div>
+      <div class="tot"><b class="num">${money(g.total)}</b><span>${g.count} ครั้ง</span></div>
+      ${g.items.length ? `<ul>${g.items.map((it, i) => `
+        <li onclick="openDailySlip('${esc(it.id)}')"><span class="no num">${i+1}.</span>
+        <span class="tm num">${esc(it.time||'--:--')}</span><b class="num">${esc(baht(it.amount))}</b></li>`).join('')}</ul>`
+        : '<div class="empty">ไม่มีรายการ</div>'}
+    </div>`).join('') + '</div>';
+  h += `<div class="grand">
+    <div><div class="lbl">ยอดรับโอนรวมทุกบัญชี</div><div class="big num">${money(d.grandTotal)} <span style="font-size:15px;font-weight:500">บาท</span></div></div>
+    <div><div class="lbl">จำนวนครั้ง</div><div class="big num">${d.grandCount}</div></div>
+    <div class="mini">ตัดออก (ซ้ำ) ${d.counts.duplicate} • ไม่ใช่สลิป ${d.counts.notSlip} • ยกเลิก ${d.counts.cancelled}<br>(ไม่นับในยอด)</div>
+  </div>`;
+  if (d.records.length) {
+    h += `<details style="margin-top:16px"><summary style="cursor:pointer;color:var(--ink-2);font-weight:500">รายการทั้งหมดของวันนี้ (${d.records.length})</summary>
+      <div class="tbl-wrap" style="margin-top:10px"><table class="rt rt-slip">
+      <thead><tr><th>วันที่และเวลารับเงิน</th><th class="r">จำนวนเงิน</th><th>บัญชีร้าน</th><th>สถานะ</th><th>อัปโหลดโดย</th></tr></thead>
+      <tbody>${d.records.map(r => `<tr class="click ${MUTED.includes(r.status)?'muted':''}" onclick="openDailySlip('${esc(r.id)}')">
+        <td class="num dt">${esc(dt(r.date, r.time))}</td><td class="r num amt"><b>${esc(baht(r.amount))}</b></td>
+        <td>${accLabel(r.account)}</td><td>${pill(r.status)}</td><td class="note">${esc(r.uploadedBy)} ${esc(r.uploadedAt.slice(11))}</td></tr>`).join('')}</tbody></table></div></details>`;
+  }
+  $('dailyBody').innerHTML = h;
+}
+
+function openDailySlip(id){
+  const s = S.daily && S.daily.records.find(r => r.id === id);
+  if (s) openEdit(s);
+}
+
+async function openPending(){
+  openModal(`<div class="mh"><h3>รายการรอตรวจสอบ</h3><button class="btn ghost" onclick="closeModal()">✕</button></div>
+    <div class="mb" id="pendBody"><div class="loading"><span class="spin"></span></div></div>`, true);
+  try{
+    const list = await api('apiGetPending', S.token);
+    S._pending = list;
+    $('pendBody').innerHTML = list.length ? `<div class="tbl-wrap"><table class="rt rt-slip">
+      <thead><tr><th>วันที่และเวลารับเงิน</th><th class="r">จำนวนเงิน</th><th>บัญชีร้าน</th><th>ปัญหา</th></tr></thead>
+      <tbody>${list.map(r => `<tr class="click" onclick="openPendingSlip('${esc(r.id)}')">
+        <td class="num dt">${esc(dt(r.date, r.time))}</td><td class="r num"><b>${esc(baht(r.amount))}</b></td>
+        <td>${accLabel(r.account)}</td><td class="note warn">${esc(r.note)}</td></tr>`).join('')}</tbody></table></div>`
+      : '<div class="loading">ไม่มีรายการรอตรวจสอบ</div>';
+  }catch(e){ $('pendBody').innerHTML = `<div class="loading">${esc(e.message)}</div>`; }
+}
+function openPendingSlip(id){
+  const s = (S._pending||[]).find(r => r.id === id);
+  if (s) openEdit(s);
+}
+
+function copySummary(){
+  const d = S.daily; if (!d) return;
+  const L = [];
+  L.push(`สรุปยอดเงินโอน ${thDate(d.date, true)}`);
+  L.push('──────────────');
+  d.accounts.forEach(g => {
+    L.push(`${g.code} ${g.name}${g.bank ? ' ('+g.bank+')' : ''}`);
+    L.push(`  ${g.count} ครั้ง  รวม ${money(g.total)} บาท`);
+    g.items.forEach((it, i) => L.push(`  ${String(i+1).padStart(2)}. ${it.time || '--:--'}  ${money(it.amount)} บาท`));
+  });
+  L.push('──────────────');
+  L.push(`รวมทุกบัญชี ${d.grandCount} ครั้ง  ${money(d.grandTotal)} บาท`);
+  if (d.counts.review) L.push(`* รอตรวจสอบ ${d.counts.review} รายการ (ยังไม่รวมในยอด)`);
+  if (d.counts.dupPending) L.push(`* ข้อมูลซ้ำรอยืนยัน ${d.counts.dupPending} รายการ (ยังไม่รวมในยอด)`);
+  const text = L.join('\n');
+  const done = () => toast('คัดลอกสรุปแล้ว วางใน LINE ได้เลย');
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+  else fallbackCopy(text, done);
+}
+function fallbackCopy(text, done){
+  const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+  ta.select(); try{ document.execCommand('copy'); done(); }catch(e){ toast('คัดลอกไม่ได้', true); }
+  ta.remove();
+}
+
+/* ===================== DASHBOARD (admin) ===================== */
+document.querySelectorAll('#presets button').forEach(b => b.addEventListener('click', () => setPreset(b.dataset.p)));
+function setPreset(p){
+  document.querySelectorAll('#presets button').forEach(b => b.classList.toggle('on', b.dataset.p === p));
+  const t = isoToday(); const [y, m] = t.split('-').map(Number);
+  let from, to = t;
+  if (p === 'today') from = t;
+  else if (p === '7') from = addDays(t, -6);
+  else if (p === 'month') from = t.slice(0,8) + '01';
+  else if (p === 'lastmonth') {
+    const lm = m === 1 ? [y-1, 12] : [y, m-1];
+    from = `${lm[0]}-${String(lm[1]).padStart(2,'0')}-01`;
+    to = addDays(t.slice(0,8) + '01', -1);
+  } else if (p === 'year') from = y + '-01-01';
+  $('dFrom').value = from; $('dTo').value = to;
+  loadDash();
+}
+function manualRange(){
+  document.querySelectorAll('#presets button').forEach(b => b.classList.remove('on'));
+  loadDash();
+}
+
+async function loadDash(silent){
+  if (!silent) $('dashBody').innerHTML = '<div class="loading"><span class="spin"></span></div>';
+  try{
+    const d = await api('apiGetDashboard', S.token, $('dFrom').value, $('dTo').value);
+    S.dash = d; renderDash(d);
+  }catch(e){ $('dashBody').innerHTML = `<div class="card loading">${esc(e.message)}</div>`; }
+}
+
+function pct(a, b){ if (!b) return null; return (a - b) / b * 100; }
+function renderDash(d){
+  const ch = pct(d.grandTotal, d.prev.total);
+  const delta = ch === null ? '<span>ไม่มีข้อมูลช่วงก่อนหน้า</span>'
+    : `<span class="${ch>=0?'up':'down'}">${ch>=0?'▲':'▼'} ${Math.abs(ch).toFixed(1)}%</span> เทียบช่วงก่อนหน้า (${money0(d.prev.total)})`;
+  const avg = d.days.length ? d.grandTotal / d.days.length : 0;
+  let h = `<div class="kpis">
+    <div class="kpi"><div class="l">จำนวนเงินรวมที่รับ</div><div class="v num">${money(d.grandTotal)}</div><div class="d">${delta}</div></div>
+    <div class="kpi"><div class="l">จำนวนครั้งที่รับเงิน</div><div class="v num">${d.grandCount.toLocaleString('th-TH')}</div><div class="d">เฉลี่ย ${money(d.grandCount ? d.grandTotal/d.grandCount : 0)} บาท/ครั้ง</div></div>
+    <div class="kpi"><div class="l">เฉลี่ยต่อวัน</div><div class="v num">${money(avg)}</div><div class="d">${d.days.length} วัน (มีรายการ ${d.activeDays} วัน)</div></div>
+    <div class="kpi"><div class="l">วันที่ยอดสูงสุด</div><div class="v num">${d.maxDay ? money(d.maxDay.total) : '—'}</div><div class="d">${d.maxDay ? thDate(d.maxDay.date, true) : ''}</div></div>
+    <div class="kpi"><div class="l">รอตรวจสอบ / ซ้ำรอยืนยัน</div><div class="v num ${d.pendingInRange?'down':''}">${d.pendingInRange}</div><div class="d">${d.pendingNoDate ? `+ ไม่มีวันที่ ${d.pendingNoDate} รายการ` : 'ยังไม่รวมในยอด'}</div></div>
+  </div>`;
+
+  h += `<div class="card"><div class="card-head"><div><h2>สรุปการรับเงินแยกตามบัญชี</h2><div class="sub">${thDate(d.from)} – ${thDate(d.to)}</div></div></div>
+    <div class="tbl-wrap"><table class="rt rt-acc"><thead><tr><th>บัญชีร้าน</th><th>ธนาคาร</th><th class="r">จำนวนครั้ง</th><th class="r">จำนวนเงินรวม (บาท)</th><th class="r">เฉลี่ย/ครั้ง</th><th style="width:22%">สัดส่วน</th></tr></thead><tbody>
+    ${d.accounts.map(a => { const share = d.grandTotal ? a.total / d.grandTotal * 100 : 0; return `<tr>
+      <td>${accLabel(a.code)}</td><td class="note">${esc(a.bank)}</td><td class="r num">${a.count.toLocaleString('th-TH')}</td>
+      <td class="r num"><b>${money(a.total)}</b></td><td class="r num">${money(a.avgPerTxn)}</td>
+      <td><div class="row" style="gap:8px;flex-wrap:nowrap"><div class="share grow" style="margin:0"><i style="width:${share}%;background:${esc(a.color)}"></i></div><span class="num note">${share.toFixed(1)}%</span></div></td></tr>`; }).join('')}
+    <tr class="total"><td colspan="2">รวมทุกบัญชี</td><td class="r num">${d.grandCount.toLocaleString('th-TH')}</td><td class="r num">${money(d.grandTotal)}</td><td class="r num">${money(d.grandCount ? d.grandTotal/d.grandCount : 0)}</td><td class="nolabel hide-phone"></td></tr>
+    </tbody></table></div></div>`;
+
+  h += `<div class="card"><div class="card-head"><div><h2>จำนวนเงินรับรายวัน แยกบัญชี</h2></div></div>
+    <div class="chart-box"><canvas id="cDaily"></canvas></div></div>`;
+  h += `<div class="split">
+    <div class="card"><div class="card-head"><div><h2>ช่วงเวลาที่ลูกค้าโอน</h2><div class="sub">จำนวนเงินรวมตามชั่วโมงของวัน</div></div></div><div class="chart-box sm"><canvas id="cHour"></canvas></div></div>
+    <div class="card"><div class="card-head"><div><h2>สัดส่วนแต่ละบัญชี</h2></div></div><div class="chart-box sm"><canvas id="cShare"></canvas></div></div>
+  </div>`;
+
+  const rows = d.days.map((day, i) => ({ day, i })).filter(r => d.dayCounts[r.i] > 0).reverse();
+  h += `<div class="card"><div class="card-head"><div><h2>ตารางรายวัน</h2><div class="sub">จำนวนเงิน (จำนวนครั้ง) • แตะแถวเพื่อเปิดสรุปของวันนั้น</div></div></div>
+    <div class="tbl-wrap hide-phone"><table class="rt rt-grid"><thead><tr><th>วันที่</th>${d.accounts.map(a => `<th class="r">${esc(a.code)}</th>`).join('')}<th class="r">รวม</th><th class="r">ครั้ง</th></tr></thead>
+    <tbody>${rows.length ? rows.map(r => `<tr class="click" onclick="gotoDay('${r.day}')"><td class="num dt">${thDate(r.day)}</td>
+      ${d.accounts.map(a => `<td class="r num">${a.daily[r.i] ? money(a.daily[r.i]) + ` <span class="note">(${a.dailyCount[r.i]})</span>` : '<span style="color:var(--ink-3)">–</span>'}</td>`).join('')}
+      <td class="r num"><b>${money(d.dayTotals[r.i])}</b></td><td class="r num">${d.dayCounts[r.i]}</td></tr>`).join('')
+      : `<tr><td colspan="${d.accounts.length+3}" class="loading">ไม่มีรายการในช่วงนี้</td></tr>`}
+    </tbody></table></div>
+    <div class="day-list show-phone">${rows.length ? rows.map((r, k) => `<button class="day-item ${k >= 14 ? 'more hidden' : ''}" onclick="gotoDay('${r.day}')">
+        <span class="d1">${thDate(r.day)}</span><span class="d2 num">${money(d.dayTotals[r.i])}</span>
+        <span class="d3">${d.accounts.filter(a => a.daily[r.i]).map(a => `<i style="--c:${esc(a.color)}">${esc(a.code)} ${money0(a.daily[r.i])}</i>`).join('')}</span>
+        <span class="d4">${d.dayCounts[r.i]} ครั้ง ›</span></button>`).join('')
+      : '<div class="loading">ไม่มีรายการในช่วงนี้</div>'}
+      ${rows.length > 14 ? `<button class="btn" style="width:100%;justify-content:center" onclick="this.parentNode.querySelectorAll('.more').forEach(e=>e.classList.remove('hidden'));this.remove()">แสดงทั้งหมด ${rows.length} วัน</button>` : ''}
+    </div></div>`;
+  $('dashBody').innerHTML = h;
+  loadLib('chart').then(() => drawCharts(d)).catch(() => {});
+}
+
+function gotoDay(day){ $('dailyDate').value = day; switchView('upload'); loadDaily(); setTimeout(() => $('dailyCard').scrollIntoView({behavior:'smooth'}), 100); }
+
+function drawCharts(d){
+  if (!window.Chart || !$('cDaily')) return;
+  Object.values(S.charts).forEach(c => c.destroy()); S.charts = {};
+  Chart.defaults.font.family = "'IBM Plex Sans Thai', system-ui, sans-serif";
+  Chart.defaults.color = '#4b5f5d';
+  const grid = { color: '#eef1ec' };
+  const tickMoney = v => v >= 1000 ? (v/1000).toLocaleString('th-TH') + 'k' : v;
+  S.charts.daily = new Chart($('cDaily'), {
+    type: 'bar',
+    data: { labels: d.days.map(shortDate), datasets: d.accounts.map(a => ({
+      label: a.code + ' ' + a.name, data: a.daily, backgroundColor: a.color, borderRadius: 3, maxBarThickness: 36, stack: 's' })) },
+    options: { maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, boxHeight: 12 } },
+        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${money(c.raw)}`, footer: items => 'รวม ' + money(items.reduce((s,i) => s + i.raw, 0)) } } },
+      scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, grid, ticks: { callback: tickMoney } } } }
+  });
+  S.charts.hour = new Chart($('cHour'), {
+    type: 'bar',
+    data: { labels: d.hours.map((_, i) => String(i).padStart(2,'0')), datasets: [{ label: 'จำนวนเงิน', data: d.hours, backgroundColor: '#0f766e', borderRadius: 3 }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { title: i => i[0].label + ':00–' + i[0].label + ':59 น.', label: c => ' ' + money(c.raw) } } },
+      scales: { x: { grid: { display: false } }, y: { grid, ticks: { callback: tickMoney } } } }
+  });
+  S.charts.share = new Chart($('cShare'), {
+    type: 'doughnut',
+    data: { labels: d.accounts.map(a => a.code + ' ' + a.name), datasets: [{ data: d.accounts.map(a => a.total), backgroundColor: d.accounts.map(a => a.color), borderWidth: 2, borderColor: '#fff' }] },
+    options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, boxHeight: 12 } },
+      tooltip: { callbacks: { label: c => ` ${c.label}: ${money(c.raw)} (${d.grandTotal ? (c.raw/d.grandTotal*100).toFixed(1) : 0}%)` } } } }
+  });
+}
+
+/* ---------- ส่งออก Excel ---------- */
+async function exportExcel(btn){
+  const d = S.dash;
+  if (!d) return toast('กรุณาแสดงข้อมูลก่อนส่งออก', true);
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> กำลังสร้างไฟล์…';
+  try{
+    const [rows] = await Promise.all([api('apiExportRows', S.token, d.from, d.to), loadLib('xlsx')]);
+    const wb = XLSX.utils.book_new();
+    const range = `${thDate(d.from)} ถึง ${thDate(d.to)}`;
+    const fmtCols = (ws, cols, fmt) => {
+      const r = XLSX.utils.decode_range(ws['!ref']);
+      for (let R = r.s.r; R <= r.e.r; R++) cols.forEach(C => { const c = ws[XLSX.utils.encode_cell({r:R, c:C})]; if (c && c.t === 'n') c.z = fmt; });
+    };
+
+    // 1) สรุปตามบัญชี
+    const s1 = [['สรุปการรับเงินโอนแยกตามบัญชี', ''], ['ช่วงวันที่', range], [],
+      ['รหัส', 'ชื่อบัญชี', 'ธนาคาร', 'จำนวนครั้ง', 'จำนวนเงินรวม (บาท)', 'เฉลี่ยต่อครั้ง (บาท)', 'สัดส่วน (%)']];
+    d.accounts.forEach(a => s1.push([a.code, a.name, a.bank, a.count, a.total, a.avgPerTxn, d.grandTotal ? +(a.total / d.grandTotal * 100).toFixed(2) : 0]));
+    s1.push(['', 'รวมทุกบัญชี', '', d.grandCount, d.grandTotal, d.grandCount ? +(d.grandTotal / d.grandCount).toFixed(2) : 0, 100]);
+    const ws1 = XLSX.utils.aoa_to_sheet(s1);
+    ws1['!cols'] = [{wch:7},{wch:22},{wch:14},{wch:12},{wch:20},{wch:18},{wch:12}];
+    fmtCols(ws1, [4,5], '#,##0.00');
+    XLSX.utils.book_append_sheet(wb, ws1, 'สรุปตามบัญชี');
+
+    // 2) สรุปรายวัน
+    const head = ['วันที่'];
+    d.accounts.forEach(a => head.push(`${a.code} จำนวนครั้ง`, `${a.code} จำนวนเงิน`));
+    head.push('รวม จำนวนครั้ง', 'รวม จำนวนเงิน');
+    const s2 = [head];
+    d.days.forEach((day, i) => {
+      if (!d.dayCounts[i]) return;
+      const r = [thDate(day)];
+      d.accounts.forEach(a => r.push(a.dailyCount[i], a.daily[i]));
+      r.push(d.dayCounts[i], d.dayTotals[i]); s2.push(r);
+    });
+    const tot = ['รวม']; d.accounts.forEach(a => tot.push(a.count, a.total)); tot.push(d.grandCount, d.grandTotal); s2.push(tot);
+    const ws2 = XLSX.utils.aoa_to_sheet(s2);
+    ws2['!cols'] = head.map((_, i) => ({ wch: i ? 14 : 14 }));
+    fmtCols(ws2, head.map((h, i) => /จำนวนเงิน/.test(h) ? i : -1).filter(i => i >= 0), '#,##0.00');
+    XLSX.utils.book_append_sheet(wb, ws2, 'สรุปรายวัน');
+
+    // 3) รายการทั้งหมด
+    const s3 = [['ลำดับ', 'วันที่และเวลารับเงิน', 'วันที่', 'เวลา', 'รหัสบัญชี', 'ชื่อบัญชี', 'จำนวนเงิน (บาท)', 'ผู้โอน', 'ธนาคารผู้โอน', 'เลขอ้างอิง', 'อัปโหลดโดย', 'เวลาอัปโหลด', 'แก้ไขโดย', 'รหัสรายการ']];
+    rows.forEach((x, i) => {
+      const a = acc(x.account);
+      s3.push([i + 1, dt(x.date, x.time), thDate(x.date), x.time, x.account, a ? a.name : '', x.amount, x.sender, x.senderBank, x.refNo, x.uploadedBy, x.uploadedAt, x.editedBy, x.id]);
+    });
+    const ws3 = XLSX.utils.aoa_to_sheet(s3);
+    ws3['!cols'] = [{wch:6},{wch:20},{wch:14},{wch:7},{wch:9},{wch:20},{wch:15},{wch:24},{wch:14},{wch:24},{wch:12},{wch:17},{wch:12},{wch:20}];
+    fmtCols(ws3, [6], '#,##0.00');
+    XLSX.utils.book_append_sheet(wb, ws3, 'รายการทั้งหมด');
+
+    XLSX.writeFile(wb, `สรุปยอดเงินโอน_${d.from}_${d.to}.xlsx`);
+    toast(`ส่งออกแล้ว ${rows.length} รายการ`);
+  }catch(e){ toast('ส่งออกไม่สำเร็จ: ' + e.message, true); }
+  finally{ btn.disabled = false; btn.innerHTML = '⬇ ส่งออก Excel'; }
+}
+
+/* ===================== ADMIN ===================== */
+async function loadAdmin(){
+  renderAccounts();
+  $('userBody').innerHTML = '<tr><td colspan="6" class="loading"><span class="spin"></span></td></tr>';
+  api('apiGetAccounts', S.token).then(a => { S.accounts = a; renderAccounts(); }).catch(e => toast(e.message, true));
+  api('apiListUsers', S.token).then(renderUsers).catch(e => toast(e.message, true));
+  api('apiGetSettings', S.token).then(renderSettings).catch(e => $('settingsBody').textContent = e.message);
+}
+
+function renderAccounts(){
+  $('accBody').innerHTML = S.accounts.map(a => `<tr>
+    <td>${accBadge(a.code)}</td><td><b style="font-weight:600">${esc(a.name)}</b></td><td>${esc(a.bank)}</td>
+    <td><div class="chips">${(a.keys||[]).map(k => `<span class="chip">${esc(k)}</span>`).join('') || '<span class="note warn">ยังไม่ได้ใส่</span>'}</div></td>
+    <td>${a.active ? '<span class="pill s-OK">ใช้งาน</span>' : '<span class="pill s-NOT_SLIP">ปิด</span>'}</td>
+    <td><button class="btn sm" onclick="openAccountForm('${esc(a.code)}')">แก้ไข</button></td></tr>`).join('')
+    || '<tr><td colspan="6" class="loading">ยังไม่มีบัญชี</td></tr>';
+}
+
+function nextCode(){
+  const used = S.accounts.map(a => a.code);
+  for (let i = 0; i < 26; i++) { const c = String.fromCharCode(65 + i); if (!used.includes(c)) return c; }
+  return '';
+}
+function openAccountForm(code){
+  const palette = ['#0f766e','#1d4ed8','#7c3aed','#ea580c','#be123c','#0891b2','#65a30d','#a16207'];
+  const a = code ? acc(code) : { code: nextCode(), name:'', bank:'', keys:[], color: palette[S.accounts.length % palette.length], active:true, sort: S.accounts.length + 1 };
+  openModal(`<div class="mh"><h3>${code ? 'แก้ไขบัญชี ' + esc(code) : 'เพิ่มบัญชีร้าน'}</h3><button class="btn ghost" onclick="closeModal()">✕</button></div>
+    <div class="mb">
+      <div class="two">
+        <div class="field"><label>รหัสบัญชี</label><input class="inp" id="aCode" value="${esc(a.code)}" ${code?'readonly':''} placeholder="A" maxlength="10"></div>
+        <div class="field"><label>ลำดับแสดง</label><input class="inp" id="aSort" type="number" value="${esc(a.sort)}"></div>
+      </div>
+      <div class="field"><label>ชื่อบัญชี</label><input class="inp" id="aName" value="${esc(a.name)}" placeholder="เช่น SCB-Gift:Banya"></div>
+      <div class="field"><label>ธนาคาร</label><input class="inp" id="aBank" value="${esc(a.bank)}" placeholder="เช่น ไทยพาณิชย์"></div>
+      <div class="field"><label>ข้อมูลที่ปรากฏบนสลิป (บรรทัดละ 1 ค่า)</label>
+        <textarea class="inp" id="aKeys" placeholder="พร้อมเพย์&#10;นาง สายสุดา สายรัตน์&#10;XXX XXX 3724">${esc((a.keys||[]).join('\n'))}</textarea>
+        <span class="hint">
+          • <b>ตัวเลข</b> (เลขบัญชี/พร้อมเพย์/หมายเลขร้านค้า) ใส่ตามที่เห็นบนสลิปได้เลย เช่น XXX XXX 3724 — ระบบเทียบเฉพาะตัวเลข ไม่สนช่องว่าง ขีด หรือ X<br>
+          • <b>ชื่อ</b> ใส่ชื่อ-นามสกุลเต็ม ระบบยอมรับสลิปที่ตัดนามสกุลเหลือตัวแรก (เช่น นาง สายสุดา ส) และใส่ชื่อภาษาอังกฤษเพิ่มได้<br>
+          • ค่าที่ซ้ำกับบัญชีอื่น (เช่น พร้อมเพย์) ใส่ได้ แต่ระบบจะไม่ใช้ค่านั้นตัดสินลำพัง<br>
+          • ถ้าสลิปตรงกับข้อมูลเฉพาะของหลายบัญชีพร้อมกัน ระบบจะให้ตรวจสอบเอง</span></div>
+      <div class="two">
+        <div class="field"><label>สี</label><input class="inp" id="aColor" type="color" value="${esc(a.color)}" style="height:42px;padding:4px"></div>
+        <div class="field"><label>สถานะ</label><select class="inp" id="aActive"><option value="1" ${a.active?'selected':''}>ใช้งาน</option><option value="0" ${!a.active?'selected':''}>ปิดใช้งาน</option></select></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn" onclick="closeModal()">ยกเลิก</button><button class="btn primary" onclick="saveAccount(this)">บันทึก</button></div>`);
+}
+async function saveAccount(btn){
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> กำลังบันทึก…';
+  try{
+    const r = await api('apiSaveAccount', S.token, {
+      code: $('aCode').value, name: $('aName').value, bank: $('aBank').value, keys: $('aKeys').value,
+      color: $('aColor').value, active: $('aActive').value === '1', sort: $('aSort').value });
+    S.accounts = r.accounts;
+    closeModal(); renderAccounts(); S.dash = null;
+    const m = r.rematch || {};
+    toast('บันทึกบัญชีแล้ว' + (m.matched ? ` • จับคู่รายการค้างได้ ${m.matched} รายการ (ยืนยันอัตโนมัติ ${m.confirmed})` : ''));
+    if (m.matched) loadDaily();
+  }catch(e){ toast(e.message, true); btn.disabled = false; btn.textContent = 'บันทึก'; }
+}
+
+var USERS = [];
+function renderUsers(list){
+  USERS = list;
+  $('userBody').innerHTML = list.map(u => `<tr>
+    <td class="num">${esc(u.username)}</td><td>${esc(u.name)}</td>
+    <td><span class="role ${u.role==='admin'?'admin':''}" style="${u.role!=='admin'?'background:var(--mute-soft);color:var(--mute)':''}">${u.role==='admin'?'ผู้ดูแลระบบ':'ผู้ใช้ทั่วไป'}</span></td>
+    <td>${u.active ? '<span class="pill s-OK">ใช้งาน</span>' : '<span class="pill s-CANCELLED">ปิด</span>'}</td>
+    <td class="num note">${esc(u.lastLogin||'—')}</td>
+    <td><button class="btn sm" onclick="openUserForm('${esc(u.username)}')">แก้ไข</button></td></tr>`).join('');
+}
+function openUserForm(username){
+  const u = username ? USERS.find(x => x.username === username) : { username:'', name:'', role:'user', active:true };
+  openModal(`<div class="mh"><h3>${username ? 'แก้ไขผู้ใช้ ' + esc(username) : 'เพิ่มผู้ใช้'}</h3><button class="btn ghost" onclick="closeModal()">✕</button></div>
+    <div class="mb">
+      <div class="field"><label>Username</label><input class="inp" id="uU" value="${esc(u.username)}" ${username?'readonly':''} autocomplete="off" placeholder="a-z, 0-9"></div>
+      <div class="field"><label>ชื่อที่แสดง</label><input class="inp" id="uN" value="${esc(u.name)}"></div>
+      <div class="two">
+        <div class="field"><label>สิทธิ์</label><select class="inp" id="uR"><option value="user" ${u.role!=='admin'?'selected':''}>ผู้ใช้งานทั่วไป</option><option value="admin" ${u.role==='admin'?'selected':''}>ผู้ดูแลระบบ (admin)</option></select></div>
+        <div class="field"><label>สถานะ</label><select class="inp" id="uA"><option value="1" ${u.active?'selected':''}>ใช้งาน</option><option value="0" ${!u.active?'selected':''}>ปิดใช้งาน</option></select></div>
+      </div>
+      <div class="field"><label>${username ? 'ตั้งรหัสผ่านใหม่ (เว้นว่างถ้าไม่เปลี่ยน)' : 'รหัสผ่าน'}</label><input class="inp" id="uP" type="password" autocomplete="new-password">
+        <span class="hint">อย่างน้อย 6 ตัวอักษร • เมื่อเปลี่ยนรหัส/สิทธิ์ ผู้ใช้นั้นต้อง login ใหม่</span></div>
+    </div>
+    <div class="mf"><button class="btn" onclick="closeModal()">ยกเลิก</button><button class="btn primary" onclick="saveUser(this)">บันทึก</button></div>`);
+}
+async function saveUser(btn){
+  btn.disabled = true;
+  try{
+    await api('apiSaveUser', S.token, { username: $('uU').value, name: $('uN').value, role: $('uR').value, active: $('uA').value === '1', password: $('uP').value });
+    closeModal(); toast('บันทึกผู้ใช้แล้ว');
+    renderUsers(await api('apiListUsers', S.token));
+  }catch(e){ toast(e.message, true); btn.disabled = false; }
+}
+
+function renderSettings(s){
+  const opt = (v, t, d) => `<label class="eng ${s.engine===v?'on':''}"><input type="radio" name="eng" value="${v}" ${s.engine===v?'checked':''} onchange="engChange()">
+    <span><b>${t}</b><small>${d}</small></span></label>`;
+  const pct = s.cap ? Math.min(100, Math.round(s.usedToday / s.cap * 100)) : 100;
+  $('settingsBody').innerHTML = `
+    <div class="free-note">🔒 <b>โหมดฟรีเท่านั้น</b> — ระบบไม่มีการตั้งค่าใดที่ทำให้เสียเงิน Gemini ใช้เฉพาะรุ่นที่มีแบบฟรี และเมื่อโควตาเต็มจะหยุดใช้ทันทีแล้วอ่านด้วย Drive OCR แทนจนถึงรอบรีเซ็ต</div>
+    <div class="field"><label>วิธีอ่านสลิป</label>
+      <div class="eng-list">
+        ${opt('drive', 'Google Drive OCR <span class="pill s-OK">ฟรี</span>', 'ใช้ระบบอ่านตัวอักษรของ Google Drive ในบัญชีของร้านเอง ไม่ต้องมี API Key รูปไม่ถูกส่งออกไปที่อื่น')}
+        ${opt('hybrid', 'Drive OCR + Gemini สำรอง <span class="pill s-OK">ฟรี • แนะนำ</span>', 'อ่านด้วย Drive OCR ก่อน ใช้ Gemini เฉพาะใบที่อ่านไม่ครบ — แม่นขึ้นโดยใช้โควตาน้อย')}
+        ${opt('gemini', 'Gemini อ่านทุกใบ <span class="pill s-OK">ฟรี</span>', 'แม่นที่สุดกับภาพไม่ชัด ใช้โควตามาก — เมื่อโควตาเต็ม ระบบอ่านด้วย Drive OCR ต่อให้อัตโนมัติ')}
+      </div></div>
+    <div id="gemFields" class="${s.engine==='drive'?'hidden':''}">
+      ${s.hasKey ? `<div class="quota ${s.quotaOutUntil ? 'out' : ''}">
+        <div class="row" style="justify-content:space-between"><b>การใช้ Gemini วันนี้</b><span class="num">${s.usedToday} / ${s.cap} ครั้ง</span></div>
+        <div class="share" style="margin:6px 0"><i style="width:${pct}%;background:${s.quotaOutUntil || pct >= 100 ? 'var(--bad)' : 'var(--brand)'}"></i></div>
+        <small>${s.quotaOutUntil
+          ? `⛔ โควตาฟรีเต็ม${s.quotaDaily ? '' : 'ชั่วคราว'} — หยุดใช้ Gemini ถึง ${esc(s.quotaOutUntil)} น. (ระหว่างนี้อ่านด้วย Drive OCR)`
+          : `รีเซ็ตรอบถัดไป ${esc(s.nextReset)} น. (เที่ยงคืนเวลาสหรัฐฯ)`}${s.autoModel ? ` • รุ่นที่ใช้: ${esc(s.autoModel)}` : ''}</small>
+      </div>` : ''}
+      <div class="field"><label>Gemini API Key <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="font-weight:400">(สร้างที่ AI Studio)</a></label>
+        <input class="inp" id="sKey" type="password" autocomplete="off" placeholder="${s.hasKey ? 'ตั้งค่าแล้ว ' + esc(s.keyHint) + ' — กรอกเฉพาะเมื่อต้องการเปลี่ยน' : 'วาง API Key ที่นี่'}">
+        <span class="hint">⚠ ใช้ Key จากโปรเจกต์ที่<b>ไม่ได้เปิด Billing / ไม่ผูกบัตร</b> เท่านั้น — Key แบบนี้ไม่มีทางถูกเก็บเงิน เกินโควตา Google แค่ปฏิเสธคำขอ
+        ${s.hasKey ? ` • <a href="#" onclick="clearKey(event)">ลบ Key</a>` : ''}</span></div>
+      <div class="two">
+        <div class="field"><label>เพดานการใช้ต่อวัน (ครั้ง)</label><input class="inp num" id="sCap" type="number" min="0" max="1000" value="${esc(s.cap)}">
+          <span class="hint">ตัวล็อกชั้นที่สองของระบบ ครบแล้วหยุดใช้ Gemini จนถึงรอบรีเซ็ต</span></div>
+        <div class="field"><label>รุ่น (เว้นว่าง = Flash-Lite อัตโนมัติ)</label><input class="inp" id="sModel" value="${esc(s.model)}" placeholder="${s.autoModel ? esc(s.autoModel) : 'อัตโนมัติ'}">
+          <span class="hint">อนุญาตเฉพาะรุ่น Flash / Flash-Lite ที่มีแบบฟรี</span></div>
+      </div>
+    </div>
+    <button class="btn primary" onclick="saveSettings(this)">บันทึกการตั้งค่า</button>`;
+}
+function engChange(){
+  const v = (document.querySelector('input[name=eng]:checked') || {}).value;
+  document.querySelectorAll('.eng').forEach(l => l.classList.toggle('on', l.querySelector('input').checked));
+  $('gemFields').classList.toggle('hidden', v === 'drive');
+}
+async function saveSettings(btn, extra){
+  btn.disabled = true;
+  try{
+    const engine = (document.querySelector('input[name=eng]:checked') || {}).value || 'drive';
+    await api('apiSaveSettings', S.token, Object.assign({ engine, apiKey: $('sKey') ? $('sKey').value : '', model: $('sModel') ? $('sModel').value : '', cap: $('sCap') ? $('sCap').value : '' }, extra || {}));
+    toast('บันทึกการตั้งค่าแล้ว'); renderSettings(await api('apiGetSettings', S.token));
+  }catch(e){ toast(e.message, true); btn.disabled = false; }
+}
+function clearKey(e){
+  e.preventDefault();
+  if (!confirm('ลบ Gemini API Key และเปลี่ยนเป็น Google Drive OCR?')) return;
+  document.querySelector('input[name=eng][value=drive]').checked = true;
+  saveSettings(document.querySelector('#settingsBody .btn.primary'), { clearKey: true });
+}
+
+/* ===================== RESPONSIVE TABLE LABELS =====================
+   ใส่ data-label ให้ทุกช่องในตาราง .rt จากหัวตาราง เพื่อให้แสดงเป็นการ์ดบนโทรศัพท์ */
+function labelTables(root){
+  (root || document).querySelectorAll('table.rt').forEach(t => {
+    const heads = Array.from(t.querySelectorAll('thead th')).map(th => th.textContent.trim());
+    t.querySelectorAll('tbody tr').forEach(tr => {
+      let i = 0;
+      Array.from(tr.children).forEach(td => {
+        if (!td.hasAttribute('data-label')) td.setAttribute('data-label', td.colSpan > 1 ? '' : (heads[i] || ''));
+        i += td.colSpan || 1;
+      });
+    });
+  });
+}
+new MutationObserver(() => labelTables()).observe(document.body, { childList: true, subtree: true });
+
+(function readyLogin(){ var b = $('loginBtn'); b.disabled = false; b.textContent = 'เข้าสู่ระบบ';
+  if (typeof google === 'undefined' || !google.script) $('loginErr').textContent = 'ต้องเปิดผ่านลิงก์ Web App (/exec) เท่านั้น'; })();
+
+window.addEventListener('beforeunload', e => { if (S.running || unsaved().length) { e.preventDefault(); e.returnValue = ''; } });
+</script>
+</body>
+</html>
